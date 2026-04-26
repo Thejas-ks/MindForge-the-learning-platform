@@ -16,7 +16,11 @@ public class JwtUtil {
     private String secret;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        // Pad or trim secret to exactly 32 bytes to guarantee HS256 compatibility
+        byte[] keyBytes = secret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] padded = new byte[32];
+        System.arraycopy(keyBytes, 0, padded, 0, Math.min(keyBytes.length, 32));
+        return Keys.hmacShaKeyFor(padded);
     }
 
     public String generateToken(String email, Role role) {
