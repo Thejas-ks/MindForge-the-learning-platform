@@ -30,28 +30,52 @@ public class AuthService {
     }
 
     public ApiResponse<String> register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return new ApiResponse<>(false, "Email already exists", null);
+        try {
+            log.info("[Register] Attempt for: " + request.getEmail());
+            if (request.getEmail() == null || request.getPassword() == null || request.getName() == null)
+                return new ApiResponse<>(false, "All fields are required", null);
+            if (userRepository.existsByEmail(request.getEmail()))
+                return new ApiResponse<>(false, "Email already exists", null);
+            User user = new User();
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setName(request.getName());
+            user.setRole(Role.USER);
+            user.setAuthProvider("email");
+            userRepository.save(user);
+            log.info("[Register] Success for: " + request.getEmail());
+            return new ApiResponse<>(true, "User registered successfully", null);
+        } catch (Exception e) {
+            log.severe("[Register] Error for " + request.getEmail() + ": " + e.getMessage());
+            return new ApiResponse<>(false, "Registration failed. Please try again.", null);
         }
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setName(request.getName());
-        user.setRole(Role.USER);
-        user.setAuthProvider("email");
-        userRepository.save(user);
-        return new ApiResponse<>(true, "User registered successfully", null);
     }
 
     public ApiResponse<String> login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
-        if (user == null) return new ApiResponse<>(false, "User not found", null);
-        if (user.getPassword() == null || user.getPassword().startsWith("GOOGLE_AUTH_"))
-            return new ApiResponse<>(false, "This account uses Google Sign-In. Please continue with Google.", null);
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
-            return new ApiResponse<>(false, "Invalid password", null);
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
-        return new ApiResponse<>(true, "Login successful", token);
+        try {
+            log.info("[Login] Attempt for: " + request.getEmail());
+            if (request.getEmail() == null || request.getPassword() == null)
+                return new ApiResponse<>(false, "Email and password are required", null);
+            User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+            if (user == null) {
+                log.warning("[Login] User not found: " + request.getEmail());
+                return new ApiResponse<>(false, "Invalid email or password", null);
+            }
+            if (user.getPassword() == null || user.getPassword().startsWith("GOOGLE_AUTH_")) {
+                log.warning("[Login] Google-only account attempted password login: " + request.getEmail());
+                return new ApiResponse<>(false, "This account uses Google Sign-In. Please continue with Google.", null);
+            }
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                log.warning("[Login] Invalid password for: " + request.getEmail());
+                return new ApiResponse<>(false, "Invalid email or password", null);
+            }
+            String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+            log.info("[Login] Success for: " + request.getEmail());
+            return new ApiResponse<>(true, "Login successful", token);
+        } catch (Exception e) {
+            log.severe("[Login] Unexpected error for " + request.getEmail() + ": " + e.getMessage());
+            return new ApiResponse<>(false, "Login failed. Please try again.", null);
+        }
     }
 
     public ApiResponse<String> googleLogin(String accessToken) {
