@@ -39,14 +39,14 @@ public class JwtFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing token");
+            filterChain.doFilter(request, response);
             return;
         }
 
         String token = header.substring(7);
 
         if (!jwtUtil.validateToken(token)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            filterChain.doFilter(request, response);
             return;
         }
 
