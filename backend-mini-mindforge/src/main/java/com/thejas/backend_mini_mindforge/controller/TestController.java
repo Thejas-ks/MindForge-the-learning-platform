@@ -14,13 +14,18 @@ public class TestController {
         this.aiService = aiService;
     }
 
+    @GetMapping("/health")
+    public String health() {
+        return "Backend Running";
+    }
+
     @GetMapping("/api/test")
     public String test(Authentication auth) {
-        return "Hello " + auth.getName();
+        return "Hello " + (auth != null ? auth.getName() : "anonymous");
     }
 
     @GetMapping("/api/test/ai")
-    public String testAi(Authentication auth) {
+    public String testAi() {
         try {
             String result = aiService.generateAnswer("Say hello in one sentence.");
             return "AI OK: " + result;
