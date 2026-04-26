@@ -1,0 +1,15 @@
+target/
+*.class
+*.jar
+
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+application-local.properties
+.env
+
+HELP.md
+README.md
