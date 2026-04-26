@@ -24,6 +24,9 @@ public class QuizQuestion {
     private String optionD;
     private String correctAnswer;
 
+    @Column(length = 2000)
+    private String explanation;
+
     public Long getId() { return id; }
 
     public String getEmail() { return email; }
@@ -49,4 +52,7 @@ public class QuizQuestion {
 
     public String getCorrectAnswer() { return correctAnswer; }
     public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; }
+
+    public String getExplanation() { return explanation; }
+    public void setExplanation(String explanation) { this.explanation = explanation; }
 }

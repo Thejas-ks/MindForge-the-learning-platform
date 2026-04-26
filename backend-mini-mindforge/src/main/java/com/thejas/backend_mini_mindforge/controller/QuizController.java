@@ -30,6 +30,16 @@ public class QuizController {
         return ResponseEntity.ok(quizService.generateFromAnswer(questionId, auth.getName(), count));
     }
 
+    @PostMapping("/generate-topic")
+    public ResponseEntity<List<QuizQuestion>> generateFromTopic(
+            @RequestParam(defaultValue = "5") int count,
+            @RequestBody java.util.Map<String, String> body,
+            Authentication auth) {
+        String topic = body.getOrDefault("topic", "");
+        if (topic.isBlank()) throw new RuntimeException("Topic is required");
+        return ResponseEntity.ok(quizService.generateFromTopic(topic, auth.getName(), count));
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<List<QuizQuestion>> generateFromFile(
             @RequestParam("file") MultipartFile file,
@@ -42,5 +52,17 @@ public class QuizController {
     @GetMapping("/history")
     public ResponseEntity<List<QuizQuestion>> history(Authentication auth) {
         return ResponseEntity.ok(quizService.getHistory(auth.getName()));
+    }
+
+    @DeleteMapping("/history/{questionId}")
+    public ResponseEntity<Void> deleteByTopic(@PathVariable Long questionId, Authentication auth) {
+        quizService.deleteByTopic(questionId, auth.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/history")
+    public ResponseEntity<Void> deleteAll(Authentication auth) {
+        quizService.deleteAll(auth.getName());
+        return ResponseEntity.ok().build();
     }
 }

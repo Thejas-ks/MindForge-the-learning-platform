@@ -4,6 +4,7 @@ import { getStreak, getHistory, getQuizHistory, getFlashcardHistory } from '../s
 import { getUser } from '../utils/auth';
 import Layout from '../components/Layout';
 import PerformanceTracker from '../components/PerformanceTracker';
+import InsightsPanel from '../components/InsightsPanel';
 import styles from './Dashboard.module.css';
 
 const cards = [
@@ -155,9 +156,12 @@ const cards = [
 export default function Dashboard() {
   const [streak, setStreak] = useState(0);
   const [stats, setStats] = useState({ questions: 0, quizzes: 0, flashcards: 0 });
+  const [quizHistory, setQuizHistory] = useState([]);
+  const [accuracy, setAccuracy] = useState(0);
   const navigate = useNavigate();
   const user = getUser();
   const username = user?.sub?.split('@')[0] || 'Learner';
+  const email = user?.sub || '';
 
   useEffect(() => {
     getStreak().then(r => setStreak(r.data?.streak ?? 0)).catch(() => {});
@@ -166,9 +170,34 @@ export default function Dashboard() {
       getQuizHistory(),
       getFlashcardHistory(),
     ]).then(([h, q, f]) => {
+      const aiHistory = Array.isArray(h.value?.data) ? h.value.data : [];
+      const quizData = Array.isArray(q.value?.data) ? q.value.data : [];
+
+      // Build a map: questionId -> topic (from the original AI question asked)
+      const idToTopic = {};
+      aiHistory.forEach(item => {
+        if (item.id && item.question) {
+          // Clean topic: take first 40 chars, strip punctuation at end
+          idToTopic[item.id] = item.question.replace(/[?!.]+$/, '').slice(0, 40);
+        }
+      });
+
+      // Attach topic to each quiz item
+      const enrichedQuiz = quizData.map(item => ({
+        ...item,
+        topic: item.questionId && idToTopic[item.questionId]
+          ? idToTopic[item.questionId]
+          : null,
+      }));
+
+      setQuizHistory(enrichedQuiz);
+
+      const total = quizData.length;
+      const correct = quizData.filter(item => item.correctAnswer && item.correctAnswer === item.userAnswer).length;
+      setAccuracy(total > 0 ? Math.round((correct / total) * 100) : 0);
       setStats({
-        questions:  Array.isArray(h.value?.data) ? h.value.data.length : 0,
-        quizzes:    Array.isArray(q.value?.data) ? q.value.data.length : 0,
+        questions: aiHistory.length,
+        quizzes: total,
         flashcards: Array.isArray(f.value?.data) ? f.value.data.length : 0,
       });
     });
@@ -176,30 +205,18 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      {/* Hero */}
-      <div className={styles.hero}>
-        <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>How do you want to study?</h1>
-          <p className={styles.heroSub}>
-            Welcome back, <strong>{username}</strong>! Pick a tool and start learning.
-          </p>
-        </div>
-        <div className={styles.heroStats}>
-          <div className={styles.statCard}>
-            <span className={styles.statIcon}>🔥</span>
-            <div>
-              <p className={styles.statValue}>{streak ?? '—'}</p>
-              <p className={styles.statLabel}>Day Streak</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Performance Tracker */}
       <PerformanceTracker
         questions={stats.questions}
         quizzes={stats.quizzes}
         flashcards={stats.flashcards}
+        streak={streak}
+      />
+
+      {/* Insights Panel */}
+      <InsightsPanel
+        quizHistory={quizHistory}
+        questions={stats.questions}
         streak={streak}
       />
 

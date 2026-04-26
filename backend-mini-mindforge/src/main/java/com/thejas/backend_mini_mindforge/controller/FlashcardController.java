@@ -30,6 +30,16 @@ public class FlashcardController {
         return ResponseEntity.ok(flashcardService.generateFromAnswer(questionId, auth.getName(), count));
     }
 
+    @PostMapping("/generate-topic")
+    public ResponseEntity<List<Flashcard>> generateFromTopic(
+            @RequestParam(defaultValue = "5") int count,
+            @RequestBody java.util.Map<String, String> body,
+            Authentication auth) {
+        String topic = body.getOrDefault("topic", "");
+        if (topic.isBlank()) throw new RuntimeException("Topic is required");
+        return ResponseEntity.ok(flashcardService.generateFromTopic(topic, auth.getName(), count));
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<List<Flashcard>> generateFromFile(
             @RequestParam("file") MultipartFile file,
@@ -42,5 +52,17 @@ public class FlashcardController {
     @GetMapping("/history")
     public ResponseEntity<List<Flashcard>> history(Authentication auth) {
         return ResponseEntity.ok(flashcardService.getHistory(auth.getName()));
+    }
+
+    @DeleteMapping("/history/{questionId}")
+    public ResponseEntity<Void> deleteByTopic(@PathVariable Long questionId, Authentication auth) {
+        flashcardService.deleteByTopic(questionId, auth.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/history")
+    public ResponseEntity<Void> deleteAll(Authentication auth) {
+        flashcardService.deleteAll(auth.getName());
+        return ResponseEntity.ok().build();
     }
 }

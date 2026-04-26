@@ -137,11 +137,15 @@ export default function PerformanceTracker({ questions = 0, quizzes = 0, flashca
       <div className={styles.bars}>
         {METRICS.map(({ key, label, color, max }, i) => {
           const pct = Math.min(100, Math.round((counts[key] / max) * 100));
+          const contextLabel = pct >= 75 ? 'Good progress' : pct >= 40 ? 'Keep going' : 'Needs improvement';
           return (
             <div key={key} className={styles.barRow}>
               <div className={styles.barMeta}>
                 <span className={styles.barLabel}>{label}</span>
-                <span className={styles.barPct} style={{ color }}>{pct}%</span>
+                <div className={styles.barRight}>
+                  <span className={styles.barContext} style={{ color: pct >= 75 ? '#10b981' : pct >= 40 ? '#f59e0b' : '#ef4444' }}>{contextLabel}</span>
+                  <span className={styles.barPct} style={{ color }}>{pct}%</span>
+                </div>
               </div>
               <AnimatedBar percent={pct} color={color} delay={i * 100} />
             </div>

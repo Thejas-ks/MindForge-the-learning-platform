@@ -2,21 +2,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.875rem;
   padding: 2rem;
 }
 
 .spinner {
   border-radius: 50%;
-  border: 3px solid var(--border);
+  border: 2.5px solid var(--border);
   border-top-color: var(--primary);
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
 }
 
-.sm { width: 20px; height: 20px; border-width: 2px; }
-.md { width: 36px; height: 36px; }
-.lg { width: 52px; height: 52px; border-width: 4px; }
+.sm { width: 18px; height: 18px; border-width: 2px; }
+.md { width: 34px; height: 34px; }
+.lg { width: 50px; height: 50px; border-width: 3.5px; }
 
-.text { color: var(--text-secondary); font-size: 0.9rem; }
+.text {
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
 
 @keyframes spin { to { transform: rotate(360deg); } }

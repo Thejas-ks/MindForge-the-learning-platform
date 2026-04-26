@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="bookL" x1="10" y1="130" x2="100" y2="175" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#3730a3"/>
+    </linearGradient>
+    <linearGradient id="bookR" x1="100" y1="130" x2="190" y2="175" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="brainG" x1="10" y1="15" x2="98" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="circuitG" x1="102" y1="15" x2="185" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="bulbG" x1="80" y1="30" x2="120" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Open Book left page -->
+  <path d="M100 155 L12 128 L12 112 Q56 126 100 118 Z" fill="url(#bookL)"/>
+  <!-- Open Book right page -->
+  <path d="M100 155 L188 128 L188 112 Q144 126 100 118 Z" fill="url(#bookR)"/>
+  <!-- Book spine -->
+  <path d="M100 118 L100 155" stroke="#1e1b4b" stroke-width="3"/>
+  <!-- Book base shadow -->
+  <path d="M12 128 Q56 140 100 134 Q144 140 188 128 L188 134 Q144 146 100 140 Q56 146 12 134 Z" fill="rgba(0,0,0,0.25)"/>
+  <!-- Left page lines -->
+  <line x1="22" y1="124" x2="90" y2="118" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="131" x2="90" y2="125" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
+  <line x1="26" y1="138" x2="90" y2="132" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- Right page lines -->
+  <line x1="110" y1="118" x2="178" y2="124" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="110" y1="125" x2="178" y2="131" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="110" y1="132" x2="174" y2="138" stroke="#818cf8" stroke-width="1.6" stroke-linecap="round"/>
+
+  <!-- Brain outline (left half) -->
+  <path d="
+    M98 118
+    Q78 118 64 108
+    Q44 104 32 88
+    Q18 74 22 56
+    Q26 40 42 34
+    Q38 20 50 16
+    Q64 12 74 24
+    Q82 14 94 18
+    L98 22 L98 118Z
+  " fill="none" stroke="url(#brainG)" stroke-width="5" stroke-linejoin="round" filter="url(#glow)"/>
+  <!-- Brain folds -->
+  <path d="M56 76 Q44 72 48 58" stroke="url(#brainG)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M70 90 Q56 90 56 76" stroke="url(#brainG)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M84 98 Q70 100 70 90" stroke="url(#brainG)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M58 46 Q68 36 78 46" stroke="url(#brainG)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M38 66 Q30 54 40 48" stroke="url(#brainG)" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M48 96 Q34 92 34 78" stroke="url(#brainG)" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Circuit traces (right half) -->
+  <!-- vertical stem -->
+  <line x1="102" y1="50" x2="102" y2="24" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round" filter="url(#glow)"/>
+  <!-- top branch -->
+  <line x1="102" y1="24" x2="134" y2="24" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="134" y1="24" x2="134" y2="12" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="134" cy="9"  r="5.5" fill="none" stroke="url(#circuitG)" stroke-width="3.5"/>
+  <!-- upper-right branch -->
+  <line x1="102" y1="40" x2="144" y2="34" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="144" y1="34" x2="158" y2="20" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="161" cy="17" r="5.5" fill="none" stroke="url(#circuitG)" stroke-width="3.5"/>
+  <!-- right branch -->
+  <line x1="102" y1="62" x2="158" y2="52" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="163" cy="51" r="5.5" fill="none" stroke="url(#circuitG)" stroke-width="3.5"/>
+  <!-- lower branch -->
+  <line x1="102" y1="80" x2="150" y2="80" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="150" y1="80" x2="150" y2="64" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="150" cy="60" r="5.5" fill="none" stroke="url(#circuitG)" stroke-width="3.5"/>
+  <!-- bottom branch -->
+  <line x1="102" y1="98" x2="138" y2="108" stroke="url(#circuitG)" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="142" cy="111" r="5.5" fill="none" stroke="url(#circuitG)" stroke-width="3.5"/>
+
+  <!-- Lightbulb body -->
+  <path d="M100 26 C88 26 78 36 78 50 C78 60 83 67 86 73 L114 73 C117 67 122 60 122 50 C122 36 112 26 100 26Z"
+    fill="none" stroke="url(#bulbG)" stroke-width="4.5" filter="url(#glow)"/>
+  <!-- Bulb base rings -->
+  <line x1="86" y1="77" x2="114" y2="77" stroke="url(#bulbG)" stroke-width="4" stroke-linecap="round"/>
+  <line x1="89" y1="83" x2="111" y2="83" stroke="url(#bulbG)" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Lightning bolt inside bulb -->
+  <path d="M103 33 L95 52 L101 52 L97 68 L107 48 L101 48 Z" fill="#f472b6" filter="url(#glow)"/>
+  <!-- Glow rays -->
+  <line x1="100" y1="19" x2="100" y2="12" stroke="#c084fc" stroke-width="3" stroke-linecap="round"/>
+  <line x1="72"  y1="28" x2="67"  y2="23" stroke="#c084fc" stroke-width="3" stroke-linecap="round"/>
+  <line x1="128" y1="28" x2="133" y2="23" stroke="#c084fc" stroke-width="3" stroke-linecap="round"/>
+  <line x1="64"  y1="50" x2="57"  y2="50" stroke="#c084fc" stroke-width="3" stroke-linecap="round"/>
+  <!-- Star sparks -->
+  <path d="M74 36 L76 32 L78 36 L74 36Z" fill="#f472b6"/>
+  <path d="M122 36 L124 32 L126 36 L122 36Z" fill="#f472b6"/>
+</svg>
