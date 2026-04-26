@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-
     List<Question> findByEmail(String email);
+    void deleteByIdAndEmail(Long id, String email);
+    void deleteByEmail(String email);
 }

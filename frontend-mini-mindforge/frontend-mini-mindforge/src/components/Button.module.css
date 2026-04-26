@@ -3,43 +3,66 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  border-radius: var(--radius);
-  font-size: 0.95rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
   font-weight: 600;
-  font-family: inherit;
+  font-family: 'Inter', inherit;
   cursor: pointer;
   border: none;
   transition: var(--transition);
   white-space: nowrap;
   letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
+/* Shimmer effect on hover */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.btn:hover:not(:disabled)::after { transform: translateX(100%); }
+
+/* Primary */
 .primary {
   background: var(--primary-gradient);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 2px 8px rgba(79,70,229,0.3), 0 1px 2px rgba(79,70,229,0.2);
 }
 
 .primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(79,70,229,0.4), 0 2px 8px rgba(79,70,229,0.3);
 }
 
+.primary:active:not(:disabled) { transform: translateY(0); }
+
+/* Secondary */
 .secondary {
-  background: #fff;
+  background: var(--card);
   color: var(--text);
   border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-xs);
 }
 
 .secondary:hover:not(:disabled) {
   border-color: var(--primary);
   color: var(--primary);
-  background: rgba(79, 70, 229, 0.04);
+  background: rgba(79,70,229,0.05);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
+/* Ghost */
 .ghost {
   background: transparent;
   color: var(--text-secondary);
@@ -48,15 +71,21 @@
 
 .ghost:hover:not(:disabled) {
   color: var(--text);
-  background: var(--bg);
+  background: var(--border-light);
+  border-color: var(--text-dim);
 }
 
+/* Danger */
 .danger {
-  background: #fef2f2;
+  background: rgba(239,68,68,0.08);
   color: var(--error);
-  border: 1.5px solid #fecaca;
+  border: 1.5px solid rgba(239,68,68,0.2);
 }
 
-.danger:hover:not(:disabled) { background: #fee2e2; }
+.danger:hover:not(:disabled) {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.4);
+  transform: translateY(-1px);
+}
 
 .full { width: 100%; }

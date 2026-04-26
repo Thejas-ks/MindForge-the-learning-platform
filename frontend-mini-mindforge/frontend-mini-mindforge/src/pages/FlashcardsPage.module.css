@@ -20,7 +20,7 @@
   justify-content: center; align-items: center; text-align: center;
   border: 1px solid var(--border); overflow: hidden;
 }
-.front { background: #f9fafb; color: var(--text); }
+.front { background: var(--card); color: var(--text); }
 .back { background: rgba(99,102,241,0.07); border-color: rgba(99,102,241,0.2); color: var(--text); transform: rotateY(180deg); }
 .label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); flex-shrink: 0; }
 .front p, .back p {
@@ -42,13 +42,21 @@
 }
 
 .historyHeader .sectionLabel { margin-bottom: 0; }
+.historyActions { display: flex; align-items: center; gap: 0.5rem; }
+.clearAllBtn {
+  font-size: 0.82rem; font-weight: 600; color: var(--error);
+  background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.25);
+  border-radius: 8px; padding: 0.35rem 0.85rem; cursor: pointer;
+  font-family: inherit; transition: var(--transition);
+}
+.clearAllBtn:hover { background: rgba(239,68,68,0.15); }
 
 .closeHistory {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--error);
-  background: #fef2f2;
-  border: 1.5px solid #fecaca;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
   border-radius: 8px;
   padding: 0.35rem 0.85rem;
   cursor: pointer;
@@ -57,7 +65,14 @@
   white-space: nowrap;
 }
 
-.closeHistory:hover { background: #fee2e2; }
+.closeHistory:hover { background: var(--border); }
+.accordionRight { display: flex; align-items: center; gap: 0.5rem; }
+.deleteBtn {
+  background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.25); cursor: pointer;
+  font-size: 0.85rem; padding: 0.25rem 0.5rem; border-radius: 6px; color: var(--error);
+  transition: var(--transition); line-height: 1;
+}
+.deleteBtn:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.5); }
 
 /* Accordion */
 .accordion { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -65,7 +80,7 @@
 .accordionItem {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
-  background: #fff;
+  background: var(--card);
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -89,7 +104,7 @@
   gap: 1rem;
 }
 
-.accordionHeader:hover { background: #f9fafb; }
+.accordionHeader:hover { background: var(--bg); }
 .accordionOpen .accordionHeader { background: rgba(79,70,229,0.04); }
 
 .accordionLeft {
@@ -133,9 +148,43 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.countRow { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+/* Topic selector */
+.selectLabel { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; }
+.topicList { display: flex; flex-direction: column; gap: 0.4rem; max-height: 220px; overflow-y: auto; margin-bottom: 0.5rem; }
+.topicBtn {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.9rem;
+  border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--card);
+  color: var(--text-secondary); font-size: 0.875rem; cursor: pointer;
+  text-align: left; font-family: inherit; transition: var(--transition); width: 100%;
+}
+.topicBtn:hover { border-color: var(--accent); color: var(--text); }
+.topicSelected { border-color: var(--accent); background: rgba(99,102,241,0.08); color: var(--accent); }
+.topicIcon { font-size: 1rem; flex-shrink: 0; }
+.topicText { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Topic selector */
+.selectLabel { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; }
+
+/* Mode toggle */
+.modeToggle { display: flex; gap: 0.4rem; background: var(--bg); border-radius: var(--radius); padding: 0.25rem; }
+.modeBtn { flex: 1; padding: 0.4rem 0.75rem; border-radius: calc(var(--radius) - 2px); border: none; background: transparent; color: var(--text-secondary); font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--transition); }
+.modeBtnActive { background: var(--card); color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+/* Custom topic input */
+.customInput { width: 100%; padding: 0.65rem 0.9rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--text); font-size: 0.9rem; font-family: inherit; outline: none; transition: border-color 0.2s; }
+.customInput:focus { border-color: var(--primary); }
+.customInput::placeholder { color: var(--text-dim); }
+.switchLink { background: none; border: none; color: var(--primary); font-size: inherit; cursor: pointer; font-family: inherit; text-decoration: underline; padding: 0; }
+
+/* Post-generation controls */
+.quizHeader { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.quizControls { display: flex; gap: 0.4rem; }
+.controlBtn { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 0.3rem 0.65rem; cursor: pointer; font-family: inherit; transition: var(--transition); white-space: nowrap; }
+.controlBtn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.controlBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.topicTag { font-size: 0.7rem; font-weight: 600; color: var(--accent); background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 999px; padding: 0.1rem 0.5rem; margin-left: 0.5rem; }
 .countLabel { font-size: 0.82rem; color: var(--text-secondary); white-space: nowrap; }
 .countOptions { display: flex; gap: 0.4rem; }
-.countBtn { width: 36px; height: 36px; border-radius: var(--radius); border: 1.5px solid var(--border); background: #fff; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--transition); }
+.countBtn { width: 36px; height: 36px; border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--card); color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--transition); }
 .countBtn:hover { border-color: var(--accent); color: var(--accent); }
 .countActive { background: rgba(99,102,241,0.08); border-color: var(--accent); color: var(--accent); }

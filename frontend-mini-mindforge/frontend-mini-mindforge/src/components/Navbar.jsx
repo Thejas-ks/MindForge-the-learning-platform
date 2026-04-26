@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { removeToken } from '../utils/auth';
 import { getUser } from '../utils/auth';
 import { useTheme } from '../utils/ThemeContext';
+import { MindForgeLogoFull } from './MindForgeLogo';
 import styles from './Navbar.module.css';
 
 const navLinks = [
@@ -28,21 +29,22 @@ export default function Navbar() {
 
         <div className={styles.left}>
           <NavLink to="/dashboard" className={styles.logo}>
-            <span className={styles.logoIcon}>⚡</span>
-            <span className={styles.logoText}>MindForge</span>
+            <MindForgeLogoFull size={32} />
           </NavLink>
         </div>
 
         <nav className={styles.center}>
-          {navLinks.map(({ to, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
-            >
-              {label}
-            </NavLink>
-          ))}
+          <div className={styles.navPill}>
+            {navLinks.map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
+              >
+                {label}
+              </NavLink>
+            ))}
+          </div>
         </nav>
 
         <div className={styles.right}>
@@ -70,7 +72,7 @@ export default function Navbar() {
           <button className={styles.logoutBtn} onClick={handleLogout}>
             Logout
           </button>
-          <div className={styles.avatar} title={user?.sub}>
+          <div className={styles.avatar} title={user?.sub} onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
             {(user?.sub || 'U')[0].toUpperCase()}
           </div>
         </div>

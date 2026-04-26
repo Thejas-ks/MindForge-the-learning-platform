@@ -1,0 +1,44 @@
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  animation: fadeUp 0.4s ease both;
+}
+
+.avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #a855f7);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.avatarText { font-size: 1.5rem; font-weight: 800; color: #fff; }
+
+.info { flex: 1; min-width: 160px; }
+.nameRow { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.2rem; }
+.name { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.levelBadge {
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.2rem 0.65rem; border-radius: 999px; border: 1.5px solid;
+}
+.email { font-size: 0.82rem; color: var(--text-secondary); }
+.levelHint { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; font-style: italic; }
+
+.stats { display: flex; gap: 1.25rem; flex-shrink: 0; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+.statVal { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.statLbl { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .stats { width: 100%; justify-content: space-around; }
+}

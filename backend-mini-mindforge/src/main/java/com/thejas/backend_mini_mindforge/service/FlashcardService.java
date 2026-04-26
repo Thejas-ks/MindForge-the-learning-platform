@@ -29,6 +29,11 @@ public class FlashcardService {
     }
 
     @Transactional
+    public List<Flashcard> generateFromTopic(String topic, String email, int count) {
+        return generateAndSave(topic, null, email, count);
+    }
+
+    @Transactional
     public List<Flashcard> generateFromAnswer(Long questionId, String email, int count) {
         String answerText = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("Question not found with id: " + questionId))
@@ -70,6 +75,16 @@ public class FlashcardService {
 
     public List<Flashcard> getHistory(String email) {
         return flashcardRepository.findByEmail(email);
+    }
+
+    @Transactional
+    public void deleteByTopic(Long questionId, String email) {
+        flashcardRepository.deleteByQuestionIdAndEmail(questionId, email);
+    }
+
+    @Transactional
+    public void deleteAll(String email) {
+        flashcardRepository.deleteByEmail(email);
     }
 
     private String cleanJson(String raw) {

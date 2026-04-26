@@ -162,6 +162,8 @@
   justify-content: space-between;
   align-items: center;
 }
+.barRight { display: flex; align-items: center; gap: 0.5rem; }
+.barContext { font-size: 0.68rem; font-weight: 600; }
 
 .barLabel { font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
 .barPct { font-size: 0.78rem; font-weight: 700; }

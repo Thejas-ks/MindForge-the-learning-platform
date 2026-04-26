@@ -1,8 +1,9 @@
 package com.thejas.backend_mini_mindforge.controller;
 
 import com.thejas.backend_mini_mindforge.dto.request.SubmitAnswerRequest;
-import com.thejas.backend_mini_mindforge.dto.response.SubmitAnswerResponse;
+import com.thejas.backend_mini_mindforge.dto.response.DailyWorkoutResponse;
 import com.thejas.backend_mini_mindforge.dto.response.StreakResponse;
+import com.thejas.backend_mini_mindforge.dto.response.SubmitAnswerResponse;
 import com.thejas.backend_mini_mindforge.entity.BrainQuestion;
 import com.thejas.backend_mini_mindforge.service.WorkoutService;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ public class WorkoutController {
         this.workoutService = workoutService;
     }
 
-    // Returns 3 daily questions (1 logic, 1 aptitude, 1 coding) — same for everyone today
+    // Returns today's workout — same questions per user per day (UTC)
+    // Includes completion status and difficulty level
     @GetMapping("/today")
-    public ResponseEntity<List<BrainQuestion>> getToday() {
-        return ResponseEntity.ok(workoutService.getTodayQuestions());
+    public ResponseEntity<DailyWorkoutResponse> getToday(Authentication auth) {
+        return ResponseEntity.ok(workoutService.getTodayWorkout(auth.getName()));
     }
 
-    // Returns questions filtered by type and difficulty
-    // Example: GET /api/workout/practice?type=LOGIC&difficulty=EASY
+    // Practice questions by type and difficulty
     @GetMapping("/practice")
     public ResponseEntity<List<BrainQuestion>> getPractice(
             @RequestParam String type,
@@ -36,7 +37,7 @@ public class WorkoutController {
         return ResponseEntity.ok(workoutService.getPracticeQuestions(type, difficulty));
     }
 
-    // Submit answer for a question — updates streak and returns result
+    // Submit answer — updates session progress, streak, and difficulty
     @PostMapping("/submit")
     public ResponseEntity<SubmitAnswerResponse> submit(
             @RequestBody SubmitAnswerRequest request,
@@ -44,7 +45,7 @@ public class WorkoutController {
         return ResponseEntity.ok(workoutService.submitAnswer(request, auth.getName()));
     }
 
-    // Get current streak for logged-in user
+    // Get current streak
     @GetMapping("/streak")
     public ResponseEntity<StreakResponse> getStreak(Authentication auth) {
         return ResponseEntity.ok(workoutService.getStreak(auth.getName()));

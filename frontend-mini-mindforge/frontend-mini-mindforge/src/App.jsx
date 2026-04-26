@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { isAuthenticated } from './utils/auth';
 import { useTheme } from './utils/ThemeContext';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -11,6 +12,7 @@ import QuizPage from './pages/QuizPage';
 import FlashcardsPage from './pages/FlashcardsPage';
 import History from './pages/History';
 import BrainWorkout from './pages/BrainWorkout';
+import Profile from './pages/Profile';
 
 function PrivateRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" replace />;
@@ -46,7 +48,7 @@ export default function App() {
     <BrowserRouter>
       <AppToaster />
       <Routes>
-        <Route path="/"           element={<Navigate to="/dashboard" replace />} />
+        <Route path="/"           element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Landing />} />
         <Route path="/login"      element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register"   element={<PublicRoute><Register /></PublicRoute>} />
         <Route path="/dashboard"  element={<PrivateRoute><Dashboard /></PrivateRoute>} />
@@ -56,6 +58,7 @@ export default function App() {
         <Route path="/quiz"       element={<PrivateRoute><QuizPage /></PrivateRoute>} />
         <Route path="/flashcards" element={<PrivateRoute><FlashcardsPage /></PrivateRoute>} />
         <Route path="/workout"    element={<PrivateRoute><BrainWorkout /></PrivateRoute>} />
+        <Route path="/profile"    element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="*"           element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

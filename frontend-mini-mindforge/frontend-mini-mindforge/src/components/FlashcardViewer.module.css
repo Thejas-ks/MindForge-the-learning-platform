@@ -7,7 +7,6 @@
   padding: 1rem 0;
 }
 
-/* Progress */
 .progress {
   width: 100%;
   max-width: 640px;
@@ -17,91 +16,117 @@
 }
 
 .counter {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-dim);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .progressBar {
   width: 100%;
-  height: 4px;
+  height: 3px;
   background: var(--border);
-  border-radius: 2px;
+  border-radius: 99px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
   background: var(--primary-gradient);
-  border-radius: 2px;
-  transition: width 0.3s ease;
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 8px rgba(79,70,229,0.4);
 }
 
-/* Card */
+/* ── Card container — holds perspective ── */
 .card {
   width: 100%;
   max-width: 640px;
   height: 320px;
   cursor: pointer;
   perspective: 1200px;
-  transition: transform 0.15s ease;
 }
 
-.card:hover { transform: translateY(-4px); }
-
+/* ── Inner wrapper — this is what rotates ── */
 .cardInner {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
-.flipped .cardInner { transform: rotateY(180deg); }
+.flipped .cardInner {
+  transform: rotateY(180deg);
+}
 
-.cardFront, .cardBack {
+/* ── Shared face styles ── */
+.cardFront,
+.cardBack {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
   overflow: hidden;
+  /* Critical: hide the face when it's rotated away */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.cardFront { color: #fff; }
+/* ── Front face — starts visible (0deg) ── */
+.cardFront {
+  color: #fff;
+  box-shadow: var(--shadow-xl);
+  /* No transform needed — front is at 0deg by default */
+}
 
+/* ── Back face — starts hidden (180deg), shown after flip ── */
 .cardBack {
   background: var(--card);
-  border: 2px solid var(--border);
+  border: 1.5px solid var(--border);
   color: var(--text);
+  box-shadow: var(--shadow-lg);
+  /* Pre-rotated 180deg so it faces away initially */
   transform: rotateY(180deg);
 }
 
+/* ── Labels ── */
 .sideLabel {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.75;
+  letter-spacing: 0.12em;
   position: absolute;
   top: 1.25rem;
   left: 50%;
-  transform: translateX(-50%);
+  translate: -50% 0;
   white-space: nowrap;
+  padding: 0.2rem 0.75rem;
+  border-radius: var(--radius-full);
 }
 
-.cardFront .sideLabel { color: rgba(255,255,255,0.85); }
-.cardBack .sideLabel { color: var(--primary); opacity: 1; }
+.cardFront .sideLabel {
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+}
 
+.cardBack .sideLabel {
+  color: var(--primary);
+  background: rgba(79,70,229,0.1);
+}
+
+/* ── Card text ── */
 .cardText {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
   line-height: 1.7;
   text-align: center;
@@ -115,19 +140,31 @@
 }
 
 .cardFront .cardText { color: #fff; }
-.cardBack .cardText { color: var(--text); }
+.cardBack .cardText  { color: var(--text); }
 
+/* ── Tap hint ── */
 .tapHint {
-  font-size: 0.75rem;
-  opacity: 0.6;
+  font-size: 0.72rem;
   position: absolute;
   bottom: 1.25rem;
   left: 50%;
-  transform: translateX(-50%);
+  translate: -50% 0;
   white-space: nowrap;
+  padding: 0.2rem 0.75rem;
+  border-radius: var(--radius-full);
 }
 
-/* Navigation */
+.cardFront .tapHint {
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+}
+
+.cardBack .tapHint {
+  color: var(--text-dim);
+  background: var(--border-light);
+}
+
+/* ── Navigation ── */
 .nav {
   display: flex;
   align-items: center;
@@ -139,48 +176,54 @@
 
 .navBtn {
   padding: 0.6rem 1.4rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius-full);
   border: 1.5px solid var(--border);
   background: var(--card);
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   transition: var(--transition);
   min-width: 100px;
+  box-shadow: var(--shadow-xs);
 }
 
 .navBtn:hover:not(:disabled) {
   border-color: var(--primary);
   color: var(--primary);
-  background: rgba(79,70,229,0.04);
+  background: rgba(79,70,229,0.05);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
-.navBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+.navBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .dots {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.35rem;
   flex-wrap: wrap;
   justify-content: center;
   max-width: 300px;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--border);
   border: none;
   cursor: pointer;
-  transition: var(--transition);
+  transition: var(--transition-spring);
   padding: 0;
 }
 
+.dot:hover { background: var(--text-dim); transform: scale(1.2); }
+
 .dotActive {
   background: var(--primary);
-  transform: scale(1.3);
+  transform: scale(1.4);
+  box-shadow: 0 0 6px rgba(79,70,229,0.5);
 }
 
 @media (max-width: 680px) {

@@ -1,10 +1,11 @@
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: 1.75rem;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
+  position: relative;
 }
 
 .hoverable {
@@ -12,7 +13,11 @@
 }
 
 .hoverable:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-hover);
-  border-color: rgba(79, 70, 229, 0.2);
+  border-color: var(--border-glow);
+}
+
+.hoverable:active {
+  transform: translateY(-1px);
 }

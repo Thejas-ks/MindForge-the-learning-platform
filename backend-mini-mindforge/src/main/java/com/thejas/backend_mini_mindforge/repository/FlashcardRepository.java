@@ -8,4 +8,6 @@ import java.util.List;
 public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     List<Flashcard> findByEmail(String email);
     List<Flashcard> findByQuestionId(Long questionId);
+    void deleteByQuestionIdAndEmail(Long questionId, String email);
+    void deleteByEmail(String email);
 }
