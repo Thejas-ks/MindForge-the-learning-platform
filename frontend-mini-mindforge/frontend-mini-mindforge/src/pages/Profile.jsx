@@ -35,7 +35,8 @@ export default function Profile() {
   const navigate = useNavigate();
   const user = getUser();
   const email = user?.sub || '';
-  const [displayName, setDisplayName] = useState(() => localStorage.getItem('displayName') || email.split('@')[0] || 'Learner');
+  const nameKey = `displayName:${email}`;
+  const [displayName, setDisplayName] = useState(() => localStorage.getItem(nameKey) || email.split('@')[0] || 'Learner');
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(displayName);
   const [loading, setLoading] = useState(true);
@@ -100,7 +101,7 @@ export default function Profile() {
     if (nameInput.trim()) {
       const name = nameInput.trim();
       setDisplayName(name);
-      localStorage.setItem('displayName', name);
+      localStorage.setItem(nameKey, name);
       toast.success('Name updated!');
     }
     setEditing(false);
