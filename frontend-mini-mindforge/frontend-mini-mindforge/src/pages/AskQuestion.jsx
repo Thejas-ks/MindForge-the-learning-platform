@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { chatSend, chatHistory, chatConversations, chatDeleteConversation, generateQuiz, generateFlashcards } from '../services/api';
 import { getErrorMessage } from '../utils/errorHandler';
-import Layout from '../components/Layout';
+import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
 import FlashcardViewer from '../components/FlashcardViewer';
@@ -375,7 +375,8 @@ export default function AskQuestion() {
   const showEmpty = messages.length === 0 && !loading;
 
   return (
-    <Layout>
+    <div className={styles.pageWrapper}>
+      <Navbar />
       <div className={styles.chatPage}>
 
         {/* Conversation Sidebar */}
@@ -473,6 +474,6 @@ export default function AskQuestion() {
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
