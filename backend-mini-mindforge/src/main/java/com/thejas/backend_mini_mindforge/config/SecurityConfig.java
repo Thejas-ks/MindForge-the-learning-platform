@@ -30,6 +30,7 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
