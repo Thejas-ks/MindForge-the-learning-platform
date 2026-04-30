@@ -151,7 +151,7 @@ export default function UploadNotes() {
             <input
               ref={inputRef}
               type="file"
-              accept=".pdf,.txt"
+              accept=".pdf,.txt,.docx"
               style={{ display: 'none' }}
               onChange={(e) => { setFile(e.target.files[0]); setQuiz(null); setFlashcards(null); }}
             />
@@ -191,8 +191,8 @@ export default function UploadNotes() {
           )}
         </Card>
 
-        {quizLoading && <Loader text="Building quiz from file…" />}
-        {fcLoading && <Loader text="Creating flashcards from file…" />}
+        {quizLoading && <Loader text="Building quiz from your notes… this may take up to 2 minutes" />}
+        {fcLoading && <Loader text="Creating flashcards from your notes… this may take up to 2 minutes" />}
 
         {!file && !quiz && !flashcards && !quizLoading && !fcLoading && (
           <p style={{ color: 'var(--text-dim)', fontSize: '0.875rem', textAlign: 'center', padding: '2rem 0' }}>Upload notes to generate a quiz or flashcards</p>

@@ -48,9 +48,9 @@ export const generateQuizFromTopic = (topic, count = 5) => api.post(`/api/quiz/g
 export const generateFlashcards = (questionId, count = 5) => api.post(`/api/flashcard/generate/${questionId}?count=${count}`);
 export const generateFlashcardsFromTopic = (topic, count = 5) => api.post(`/api/flashcard/generate-topic?count=${count}`, { topic });
 export const quizFromFile = (formData, count = 5) =>
-  api.post(`/api/quiz/upload?count=${count}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  api.post(`/api/quiz/upload?count=${count}`, formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 180000 });
 export const flashcardsFromFile = (formData, count = 5) =>
-  api.post(`/api/flashcard/upload?count=${count}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  api.post(`/api/flashcard/upload?count=${count}`, formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 180000 });
 export const getHistory = () => api.get('/api/ai/history');
 export const deleteHistoryItem = (id) => api.delete(`/api/ai/history/${id}`);
 export const deleteAllHistory = () => api.delete('/api/ai/history');
@@ -75,6 +75,6 @@ export const chatDeleteConversation = (conversationId) => api.delete(`/api/chat/
 
 // Notes upload
 export const uploadNotes = (formData) =>
-  api.post('/api/notes/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  api.post('/api/notes/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 180000 });
 
 export default api;

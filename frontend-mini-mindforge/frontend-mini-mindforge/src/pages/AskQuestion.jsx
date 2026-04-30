@@ -411,17 +411,17 @@ export default function AskQuestion() {
   };
 
   // ── Inline Attachment ─────────────────────────────────────────────────────
-  const handleInlineAttach = async (e) => {
+  // Store raw file — upload happens on send, not immediately
+  const handleInlineAttach = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await uploadNotes(formData);
-      setAttachedFile({ filename: res.data.filename, content: res.data.content });
-      toast.success(`Attached: ${res.data.filename}`);
-    } catch (err) { toast.error(getErrorMessage(err)); }
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['pdf', 'txt', 'docx'].includes(ext)) {
+      toast.error('Unsupported file. Use PDF, DOCX or TXT.');
+      return;
+    }
+    setAttachedFile({ file, filename: file.name, content: null, status: 'pending' });
   };
 
   // ── Conversations ─────────────────────────────────────────────────────────
@@ -471,8 +471,23 @@ export default function AskQuestion() {
     setQuestion('');
     setLoading(true);
 
-    // Inline attachment takes priority over global notes
-    const notesContext = attachedFile?.content || globalNotes?.content || null;
+    // Upload inline file now if pending, else use global notes
+    let notesContext = globalNotes?.content || null;
+    if (attachedFile?.status === 'pending') {
+      setAttachedFile(prev => ({ ...prev, status: 'uploading' }));
+      try {
+        const formData = new FormData();
+        formData.append('file', attachedFile.file);
+        const res = await uploadNotes(formData);
+        notesContext = res.data.content;
+        setAttachedFile(prev => ({ ...prev, content: res.data.content, status: 'ready' }));
+      } catch (err) {
+        toast.error('File upload failed: ' + getErrorMessage(err));
+        setAttachedFile(prev => ({ ...prev, status: 'error' }));
+        setLoading(false);
+        return;
+      }
+    }
     setAttachedFile(null);
 
     const tempId = `temp-${Date.now()}`;
@@ -615,10 +630,12 @@ export default function AskQuestion() {
           <div className={styles.inputArea}>
             {/* Inline attachment preview */}
             {attachedFile && (
-              <div className={styles.attachedFileBar}>
+              <div className={`${styles.attachedFileBar} ${attachedFile.status === 'uploading' ? styles.attachedFileUploading : ''}`}>
                 <span>📄 {attachedFile.filename}</span>
-                <span className={styles.attachedFileHint}>Using as context for next message</span>
-                <button onClick={() => setAttachedFile(null)} title="Remove">✕</button>
+                {attachedFile.status === 'pending' && <span className={styles.attachedFileHint}>Ready to send</span>}
+                {attachedFile.status === 'uploading' && <span className={styles.attachedFileHint}>⏳ Uploading…</span>}
+                {attachedFile.status === 'ready' && <span className={styles.attachedFileHint}>✅ Ready</span>}
+                {attachedFile.status !== 'uploading' && <button onClick={() => setAttachedFile(null)} title="Remove">✕</button>}
               </div>
             )}
             {globalNotes && !attachedFile && (
