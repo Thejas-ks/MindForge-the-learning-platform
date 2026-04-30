@@ -28,6 +28,9 @@ public class ChatMessage {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    // Links to user_questions table so quiz/flashcard APIs work for this message
+    private Long questionId;
+
     @Column(nullable = false)
     private LocalDateTime timestamp = LocalDateTime.now();
 }

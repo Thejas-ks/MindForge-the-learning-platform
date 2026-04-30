@@ -4,6 +4,8 @@ import com.thejas.backend_mini_mindforge.dto.request.ChatSendRequest;
 import com.thejas.backend_mini_mindforge.dto.response.ChatSendResponse;
 import com.thejas.backend_mini_mindforge.entity.ChatMessage;
 import com.thejas.backend_mini_mindforge.entity.Conversation;
+import com.thejas.backend_mini_mindforge.entity.Question;
+import com.thejas.backend_mini_mindforge.repository.QuestionRepository;
 import com.thejas.backend_mini_mindforge.repository.ChatMessageRepository;
 import com.thejas.backend_mini_mindforge.repository.ConversationRepository;
 import org.springframework.stereotype.Service;
@@ -22,13 +24,16 @@ public class ChatService {
 
     private final ConversationRepository conversationRepo;
     private final ChatMessageRepository messageRepo;
+    private final QuestionRepository questionRepo;
     private final AiService aiService;
 
     public ChatService(ConversationRepository conversationRepo,
                        ChatMessageRepository messageRepo,
+                       QuestionRepository questionRepo,
                        AiService aiService) {
         this.conversationRepo = conversationRepo;
         this.messageRepo = messageRepo;
+        this.questionRepo = questionRepo;
         this.aiService = aiService;
     }
 
@@ -74,12 +79,19 @@ public class ChatService {
         // Call AI with full context
         String aiReply = aiService.generateAnswerWithHistory(userText, contextHistory);
 
-        // Save assistant message
+        // Save assistant message — also save a Question record so quiz/flashcard APIs work
+        Question question = new Question();
+        question.setQuestion(userText);
+        question.setAnswer(aiReply);
+        question.setEmail(userEmail);
+        question = questionRepo.save(question);
+
         ChatMessage assistantMsg = new ChatMessage();
         assistantMsg.setConversationId(conv.getId());
         assistantMsg.setUserEmail(userEmail);
         assistantMsg.setRole("assistant");
         assistantMsg.setContent(aiReply);
+        assistantMsg.setQuestionId(question.getId());
         assistantMsg.setTimestamp(LocalDateTime.now());
         assistantMsg = messageRepo.save(assistantMsg);
 
