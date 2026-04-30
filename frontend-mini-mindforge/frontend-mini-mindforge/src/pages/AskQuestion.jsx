@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { chatSend, chatHistory, chatConversations, chatDeleteConversation, generateQuiz, generateFlashcards } from '../services/api';
+import { chatSend, chatHistory, chatConversations, chatDeleteConversation, generateQuiz, generateFlashcards, uploadNotes } from '../services/api';
 import { getErrorMessage } from '../utils/errorHandler';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
@@ -313,6 +313,11 @@ export default function AskQuestion() {
   const [convLoading, setConvLoading] = useState(false);
   const [newestMsgId, setNewestMsgId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Global notes context (persists across messages in session)
+  const [globalNotes, setGlobalNotes] = useState(null); // { filename, content }
+  const [notesUploading, setNotesUploading] = useState(false);
+  // Inline attachment (per message)
+  const [attachedFile, setAttachedFile] = useState(null); // { filename, content }
   // Selected text popup
   const [selectedText, setSelectedText] = useState('');
   const [popupPos, setPopupPos] = useState(null);
@@ -321,6 +326,8 @@ export default function AskQuestion() {
   const recognitionRef = useRef(null);
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
+  const globalNotesInputRef = useRef(null);
+  const inlineFileInputRef = useRef(null);
 
   useEffect(() => { loadConversations(); }, []);
 
@@ -387,6 +394,36 @@ export default function AskQuestion() {
     setListening(true);
   };
 
+  // ── Global Notes Upload ───────────────────────────────────────────────────
+  const handleGlobalNotesUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setNotesUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await uploadNotes(formData);
+      setGlobalNotes({ filename: res.data.filename, content: res.data.content });
+      toast.success(`Notes uploaded: ${res.data.filename}`);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setNotesUploading(false); }
+  };
+
+  // ── Inline Attachment ─────────────────────────────────────────────────────
+  const handleInlineAttach = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await uploadNotes(formData);
+      setAttachedFile({ filename: res.data.filename, content: res.data.content });
+      toast.success(`Attached: ${res.data.filename}`);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+  };
+
   // ── Conversations ─────────────────────────────────────────────────────────
   const loadConversations = async () => {
     setConvLoading(true);
@@ -434,11 +471,15 @@ export default function AskQuestion() {
     setQuestion('');
     setLoading(true);
 
+    // Inline attachment takes priority over global notes
+    const notesContext = attachedFile?.content || globalNotes?.content || null;
+    setAttachedFile(null);
+
     const tempId = `temp-${Date.now()}`;
     setMessages(prev => [...prev, { id: tempId, role: 'user', content: text }]);
 
     try {
-      const res = await chatSend({ conversationId: activeConvId, message: text });
+      const res = await chatSend({ conversationId: activeConvId, message: text, notesContext });
       const { conversationId, conversationTitle, userMessage, assistantMessage } = res.data;
 
       setMessages(prev => [
@@ -501,6 +542,10 @@ export default function AskQuestion() {
         {/* Main chat area */}
         <div className={styles.chatMain}>
 
+          {/* Hidden file inputs */}
+          <input ref={globalNotesInputRef} type="file" accept=".pdf,.txt,.docx" style={{ display: 'none' }} onChange={handleGlobalNotesUpload} />
+          <input ref={inlineFileInputRef} type="file" accept=".pdf,.txt,.docx" style={{ display: 'none' }} onChange={handleInlineAttach} />
+
           {/* Top bar */}
           <div className={styles.chatTopBar}>
             <button className={styles.sidebarToggle} onClick={() => setSidebarOpen(p => !p)} title="Toggle sidebar">
@@ -510,9 +555,25 @@ export default function AskQuestion() {
               <h1 className={styles.title}>Ask MindForge AI</h1>
               <p className={styles.subtitle}>Continuous AI chat with memory</p>
             </div>
-            {activeConvId && (
-              <button className={styles.newChatTopBtn} onClick={handleNewChat}>＋ New Chat</button>
-            )}
+            <div className={styles.topBarActions}>
+              {globalNotes ? (
+                <div className={styles.notesActiveBadge}>
+                  <span>📄 {globalNotes.filename}</span>
+                  <button onClick={() => setGlobalNotes(null)} title="Remove notes">✕</button>
+                </div>
+              ) : (
+                <button
+                  className={styles.uploadNotesBtn}
+                  onClick={() => globalNotesInputRef.current?.click()}
+                  disabled={notesUploading}
+                >
+                  {notesUploading ? '⏳ Uploading…' : '📎 Upload Notes'}
+                </button>
+              )}
+              {activeConvId && (
+                <button className={styles.newChatTopBtn} onClick={handleNewChat}>＋ New Chat</button>
+              )}
+            </div>
           </div>
 
           {/* Messages */}
@@ -552,6 +613,20 @@ export default function AskQuestion() {
 
           {/* Input */}
           <div className={styles.inputArea}>
+            {/* Inline attachment preview */}
+            {attachedFile && (
+              <div className={styles.attachedFileBar}>
+                <span>📄 {attachedFile.filename}</span>
+                <span className={styles.attachedFileHint}>Using as context for next message</span>
+                <button onClick={() => setAttachedFile(null)} title="Remove">✕</button>
+              </div>
+            )}
+            {globalNotes && !attachedFile && (
+              <div className={styles.attachedFileBar}>
+                <span>📄 {globalNotes.filename}</span>
+                <span className={styles.attachedFileHint}>Global notes active for all messages</span>
+              </div>
+            )}
             <div className={styles.inputBox}>
               {/* STT button */}
               <button
@@ -561,6 +636,15 @@ export default function AskQuestion() {
                 type="button"
               >
                 {listening ? '⏹' : '🎤'}
+              </button>
+              {/* Inline attach button */}
+              <button
+                className={styles.attachBtn}
+                onClick={() => inlineFileInputRef.current?.click()}
+                title="Attach file to this message"
+                type="button"
+              >
+                📎
               </button>
               <textarea
                 ref={textareaRef}
@@ -581,12 +665,12 @@ export default function AskQuestion() {
                 className={styles.sendBtn}
                 onClick={() => handleSend()}
                 disabled={loading || !question.trim()}
-                title="Send (Enter)"
+                title="Ask MindForge (Enter)"
               >
-                {loading ? '…' : '↑'}
+                {loading ? '⏳' : 'Ask MindForge'}
               </button>
             </div>
-            <p className={styles.inputHint}>Enter to send · Shift+Enter for new line · 🎤 for voice · Select text to ask</p>
+            <p className={styles.inputHint}>Enter to send · Shift+Enter for new line · 🎤 voice · 📎 attach file · Select text to ask</p>
           </div>
         </div>
       </div>

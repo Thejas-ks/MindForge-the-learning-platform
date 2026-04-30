@@ -163,7 +163,6 @@
 .subtitle { color: var(--text-secondary); font-size: 0.82rem; margin-top: 0.05rem; }
 
 .newChatTopBtn {
-  margin-left: auto;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
   border: 1.5px solid var(--border);
@@ -176,6 +175,59 @@
   transition: var(--transition);
 }
 .newChatTopBtn:hover { border-color: var(--primary); color: var(--primary); }
+
+.topBarActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.uploadNotesBtn {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.uploadNotesBtn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: rgba(79,70,229,0.05); }
+.uploadNotesBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.notesActiveBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #065f46;
+  max-width: 200px;
+}
+.notesActiveBadge span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.notesActiveBadge button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #065f46;
+  font-size: 0.7rem;
+  padding: 0;
+  flex-shrink: 0;
+  line-height: 1;
+}
 
 /* ── Messages area ── */
 .messagesArea {
@@ -448,18 +500,20 @@
 .chatInput:disabled { opacity: 0.5; }
 
 .sendBtn {
-  width: 36px; height: 36px;
+  padding: 0 1rem;
+  height: 36px;
   border-radius: 10px;
   border: none;
   background: var(--primary-gradient);
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: var(--transition);
-  line-height: 1;
+  white-space: nowrap;
+  font-family: inherit;
 }
 .sendBtn:hover:not(:disabled) { opacity: 0.88; transform: scale(1.05); }
 .sendBtn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
@@ -469,6 +523,53 @@
   color: var(--text-dim);
   text-align: center;
 }
+
+/* ── Attach button ── */
+.attachBtn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.attachBtn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ── Attached file bar ── */
+.attachedFileBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.25);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #065f46;
+  margin-bottom: 0.25rem;
+}
+.attachedFileHint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  flex: 1;
+}
+.attachedFileBar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  padding: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.attachedFileBar button:hover { color: var(--error); }
 
 /* ── STT button ── */
 .sttBtn {

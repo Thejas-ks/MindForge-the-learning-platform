@@ -73,4 +73,8 @@ export const chatHistory = (conversationId) => api.get(`/api/chat/history/${conv
 export const chatConversations = () => api.get('/api/chat/conversations');
 export const chatDeleteConversation = (conversationId) => api.delete(`/api/chat/conversations/${conversationId}`);
 
+// Notes upload
+export const uploadNotes = (formData) =>
+  api.post('/api/notes/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
 export default api;
