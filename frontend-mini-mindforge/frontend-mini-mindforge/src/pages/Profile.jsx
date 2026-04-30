@@ -34,8 +34,19 @@ function StatCard({ icon, value, label, color }) {
 export default function Profile() {
   const navigate = useNavigate();
   const user = getUser();
-  const email = user?.sub || '';
-  const [displayName, setDisplayName] = useState(() => localStorage.getItem('displayName') || email.split('@')[0] || 'Learner');
+  // JWT may store email in 'sub' or 'email' field depending on backend
+  const email = user?.email || user?.sub || '';
+  const tokenName = user?.name || '';
+  const nameKey = `displayName:${email}`;
+  const [displayName, setDisplayName] = useState(() => {
+    // 1. Per-user saved name
+    const saved = localStorage.getItem(nameKey);
+    if (saved) return saved;
+    // 2. Name from JWT (set at registration)
+    if (tokenName) return tokenName;
+    // 3. Fallback: part before @ in email
+    return email.includes('@') ? email.split('@')[0] : email || 'Learner';
+  });
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(displayName);
   const [loading, setLoading] = useState(true);
@@ -94,13 +105,14 @@ export default function Profile() {
     }).finally(() => setLoading(false));
   }, []);
 
-  const level = getLevel(stats.accuracy);
+  // Display the actual email — prefer 'email' field, fall back to 'sub' only if it looks like an email
+  const displayEmail = user?.email || (user?.sub?.includes('@') ? user.sub : '') || '';
 
   const handleSaveName = () => {
     if (nameInput.trim()) {
       const name = nameInput.trim();
       setDisplayName(name);
-      localStorage.setItem('displayName', name);
+      localStorage.setItem(nameKey, name);
       toast.success('Name updated!');
     }
     setEditing(false);
@@ -151,7 +163,7 @@ export default function Profile() {
                 <button className={styles.editBtn} onClick={() => { setNameInput(displayName); setEditing(true); }}>✏️ Edit</button>
               </div>
             )}
-            <p className={styles.email}>{email}</p>
+            <p className={styles.email}>{displayEmail}</p>
           </div>
           <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
         </div>

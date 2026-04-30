@@ -67,4 +67,10 @@ export const getWorkoutPractice = () => api.get('/api/workout/practice');
 export const submitWorkout = (data) => api.post('/api/workout/submit', data);
 export const getStreak = () => api.get('/api/workout/streak');
 
+// Chat (continuous conversation)
+export const chatSend = (data) => api.post('/api/chat/send', data);
+export const chatHistory = (conversationId) => api.get(`/api/chat/history/${conversationId}`);
+export const chatConversations = () => api.get('/api/chat/conversations');
+export const chatDeleteConversation = (conversationId) => api.delete(`/api/chat/conversations/${conversationId}`);
+
 export default api;
