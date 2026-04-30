@@ -76,8 +76,16 @@ public class ChatService {
         userMsg.setTimestamp(LocalDateTime.now());
         userMsg = messageRepo.save(userMsg);
 
-        // Call AI with full context
-        String aiReply = aiService.generateAnswerWithHistory(userText, contextHistory);
+        // Call AI — prepend notes context if provided
+        String aiReply;
+        if (req.getNotesContext() != null && !req.getNotesContext().isBlank()) {
+            String contextualPrompt = "The user has provided the following notes/document as context:\n\n"
+                    + req.getNotesContext().substring(0, Math.min(req.getNotesContext().length(), 3000))
+                    + "\n\n---\n\nUsing the above notes as context, answer this question: " + userText;
+            aiReply = aiService.generateAnswerWithHistory(contextualPrompt, contextHistory);
+        } else {
+            aiReply = aiService.generateAnswerWithHistory(userText, contextHistory);
+        }
 
         // Save assistant message — also save a Question record so quiz/flashcard APIs work
         Question question = new Question();
