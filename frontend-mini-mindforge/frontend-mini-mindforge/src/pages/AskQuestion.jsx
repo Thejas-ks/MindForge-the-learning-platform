@@ -117,6 +117,34 @@ function TypewriterText({ text, speed = 6 }) {
   );
 }
 
+// ─── TTS HOOK ─────────────────────────────────────────────────────────────────
+
+function useTTS() {
+  const [speaking, setSpeaking] = useState(false);
+  const utterRef = useRef(null);
+
+  const speak = useCallback((text) => {
+    if (!window.speechSynthesis) { toast.error('Text-to-speech not supported in this browser.'); return; }
+    window.speechSynthesis.cancel();
+    const plain = text.replace(/[#*`_~>\[\]]/g, '').replace(/\n+/g, ' ').trim();
+    const utter = new SpeechSynthesisUtterance(plain);
+    utter.rate = 1;
+    utter.pitch = 1;
+    utter.onstart = () => setSpeaking(true);
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    utterRef.current = utter;
+    window.speechSynthesis.speak(utter);
+  }, []);
+
+  const stop = useCallback(() => {
+    window.speechSynthesis?.cancel();
+    setSpeaking(false);
+  }, []);
+
+  return { speaking, speak, stop };
+}
+
 // ─── MESSAGE BUBBLE ───────────────────────────────────────────────────────────
 
 function MessageBubble({ msg, isNew }) {
@@ -127,14 +155,17 @@ function MessageBubble({ msg, isNew }) {
   const [quizDone, setQuizDone] = useState(false);
   const [fcDone, setFcDone] = useState(false);
   const [answers, setAnswers] = useState({});
+  const { speaking, speak, stop } = useTTS();
 
   const isUser = msg.role === 'user';
+  // questionId comes from backend ChatMessage entity
+  const qId = msg.questionId;
 
   const handleQuiz = async () => {
-    if (!msg.questionId || quizDone) return;
+    if (!qId || quizDone) return;
     setQuizLoading(true);
     try {
-      const res = await generateQuiz(msg.questionId);
+      const res = await generateQuiz(qId);
       setQuiz((Array.isArray(res.data) ? res.data : []).map(q => ({ ...q, userAnswer: null })));
       setQuizDone(true);
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -142,10 +173,10 @@ function MessageBubble({ msg, isNew }) {
   };
 
   const handleFlashcards = async () => {
-    if (!msg.questionId || fcDone) return;
+    if (!qId || fcDone) return;
     setFcLoading(true);
     try {
-      const res = await generateFlashcards(msg.questionId);
+      const res = await generateFlashcards(qId);
       setFlashcards(Array.isArray(res.data) ? res.data : []);
       setFcDone(true);
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -175,19 +206,35 @@ function MessageBubble({ msg, isNew }) {
         {isNew ? <TypewriterText text={msg.content} /> : <MarkdownRenderer text={msg.content} />}
       </div>
 
-      {msg.questionId && (!quizDone || !fcDone) && (
-        <div className={styles.actions}>
-          {!quizDone && <Button onClick={handleQuiz} disabled={quizLoading || fcLoading} variant="secondary">{quizLoading ? 'Generating…' : '📝 Take Quiz'}</Button>}
-          {!fcDone && <Button onClick={handleFlashcards} disabled={fcLoading || quizLoading} variant="secondary">{fcLoading ? 'Generating…' : '🃏 Flashcards'}</Button>}
-        </div>
-      )}
+      {/* Action buttons — always shown for assistant messages */}
+      <div className={styles.actions}>
+        {/* TTS */}
+        <button
+          className={`${styles.actionBtn} ${speaking ? styles.actionBtnActive : ''}`}
+          onClick={() => speaking ? stop() : speak(msg.content)}
+          title={speaking ? 'Stop listening' : 'Listen to response'}
+        >
+          {speaking ? '⏹ Stop' : '🔊 Listen'}
+        </button>
 
-      {(quizDone || fcDone) && (
-        <div className={styles.statusChips}>
-          {quizDone && <span className={styles.statusChip}>✅ Quiz generated</span>}
-          {fcDone && <span className={styles.statusChip}>✅ Flashcards generated</span>}
-        </div>
-      )}
+        {/* Quiz — only if questionId available */}
+        {qId && !quizDone && (
+          <button className={styles.actionBtn} onClick={handleQuiz} disabled={quizLoading || fcLoading}>
+            {quizLoading ? '⏳ Generating…' : '📝 Take Quiz'}
+          </button>
+        )}
+
+        {/* Flashcards — only if questionId available */}
+        {qId && !fcDone && (
+          <button className={styles.actionBtn} onClick={handleFlashcards} disabled={fcLoading || quizLoading}>
+            {fcLoading ? '⏳ Generating…' : '🃏 Flashcards'}
+          </button>
+        )}
+
+        {/* Status chips after generation */}
+        {quizDone && <span className={styles.statusChip}>✅ Quiz generated</span>}
+        {fcDone && <span className={styles.statusChip}>✅ Flashcards generated</span>}
+      </div>
 
       {quizLoading && <Loader text="Building quiz…" />}
       {quiz && quiz.length > 0 && (
@@ -266,20 +313,21 @@ export default function AskQuestion() {
   const [convLoading, setConvLoading] = useState(false);
   const [newestMsgId, setNewestMsgId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Selected text popup
+  const [selectedText, setSelectedText] = useState('');
+  const [popupPos, setPopupPos] = useState(null);
+  // STT
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef(null);
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Load conversations on mount
-  useEffect(() => {
-    loadConversations();
-  }, []);
+  useEffect(() => { loadConversations(); }, []);
 
-  // Auto-scroll on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Auto-resize textarea
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -287,6 +335,59 @@ export default function AskQuestion() {
     el.style.height = Math.min(el.scrollHeight, 160) + 'px';
   }, [question]);
 
+  // ── Selected text feature ──────────────────────────────────────────────────
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const sel = window.getSelection();
+      const text = sel?.toString().trim();
+      if (text && text.length > 5) {
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setSelectedText(text);
+        setPopupPos({ top: rect.top + window.scrollY - 44, left: rect.left + rect.width / 2 });
+      } else {
+        setSelectedText('');
+        setPopupPos(null);
+      }
+    };
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => document.removeEventListener('mouseup', handleMouseUp);
+  }, []);
+
+  const handleAskSelected = () => {
+    if (!selectedText) return;
+    setPopupPos(null);
+    setSelectedText('');
+    window.getSelection()?.removeAllRanges();
+    handleSend(selectedText);
+  };
+
+  // ── STT ───────────────────────────────────────────────────────────────────
+  const toggleSTT = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { toast.error('Speech recognition not supported in this browser.'); return; }
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const rec = new SpeechRecognition();
+    rec.lang = 'en-US';
+    rec.interimResults = false;
+    rec.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      setQuestion(prev => prev ? prev + ' ' + transcript : transcript);
+    };
+    rec.onerror = () => { setListening(false); toast.error('Voice input failed. Please try again.'); };
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+    rec.start();
+    setListening(true);
+  };
+
+  // ── Conversations ─────────────────────────────────────────────────────────
   const loadConversations = async () => {
     setConvLoading(true);
     try {
@@ -326,31 +427,27 @@ export default function AskQuestion() {
     } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
+  // ── Send ──────────────────────────────────────────────────────────────────
   const handleSend = async (overrideText) => {
     const text = (overrideText || question).trim();
     if (!text || loading) return;
     setQuestion('');
     setLoading(true);
 
-    // Optimistic user message
     const tempId = `temp-${Date.now()}`;
-    const optimisticMsg = { id: tempId, role: 'user', content: text };
-    setMessages(prev => [...prev, optimisticMsg]);
+    setMessages(prev => [...prev, { id: tempId, role: 'user', content: text }]);
 
     try {
       const res = await chatSend({ conversationId: activeConvId, message: text });
       const { conversationId, conversationTitle, userMessage, assistantMessage } = res.data;
 
-      // Replace optimistic + add assistant
       setMessages(prev => [
         ...prev.filter(m => m.id !== tempId),
         userMessage,
         assistantMessage,
       ]);
-
       setNewestMsgId(assistantMessage.id);
 
-      // Update conversation list
       if (!activeConvId) {
         setActiveConvId(conversationId);
         setConversations(prev => [
@@ -358,7 +455,6 @@ export default function AskQuestion() {
           ...prev,
         ]);
       } else {
-        // Update title if it changed (first message sets it)
         setConversations(prev => prev.map(c =>
           c.id === conversationId ? { ...c, title: conversationTitle } : c
         ));
@@ -378,6 +474,17 @@ export default function AskQuestion() {
     <div className={styles.pageWrapper}>
       <Navbar />
       <div className={styles.chatPage}>
+
+        {/* Selected text popup */}
+        {popupPos && selectedText && (
+          <button
+            className={styles.selectedTextPopup}
+            style={{ top: popupPos.top, left: popupPos.left }}
+            onMouseDown={(e) => { e.preventDefault(); handleAskSelected(); }}
+          >
+            💬 Ask MindForge
+          </button>
+        )}
 
         {/* Conversation Sidebar */}
         <div className={`${styles.sidebarWrapper} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
@@ -446,10 +553,19 @@ export default function AskQuestion() {
           {/* Input */}
           <div className={styles.inputArea}>
             <div className={styles.inputBox}>
+              {/* STT button */}
+              <button
+                className={`${styles.sttBtn} ${listening ? styles.sttBtnActive : ''}`}
+                onClick={toggleSTT}
+                title={listening ? 'Stop listening' : 'Voice input'}
+                type="button"
+              >
+                {listening ? '⏹' : '🎤'}
+              </button>
               <textarea
                 ref={textareaRef}
                 rows={1}
-                placeholder="Message MindForge AI…"
+                placeholder={listening ? 'Listening…' : 'Message MindForge AI…'}
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
                 onKeyDown={e => {
@@ -470,7 +586,7 @@ export default function AskQuestion() {
                 {loading ? '…' : '↑'}
               </button>
             </div>
-            <p className={styles.inputHint}>Enter to send · Shift+Enter for new line</p>
+            <p className={styles.inputHint}>Enter to send · Shift+Enter for new line · 🎤 for voice · Select text to ask</p>
           </div>
         </div>
       </div>

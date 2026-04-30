@@ -308,8 +308,24 @@
 }
 
 /* ── Actions / chips ── */
-.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.statusChips { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.25rem; }
+
+.actionBtn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.actionBtn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: rgba(79,70,229,0.05); }
+.actionBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+.actionBtnActive { border-color: #ef4444 !important; color: #ef4444 !important; background: rgba(239,68,68,0.06) !important; }
 .statusChip {
   font-size: 0.78rem; font-weight: 600; color: #065f46;
   background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
@@ -454,7 +470,44 @@
   text-align: center;
 }
 
-/* ── Typewriter cursor ── */
+/* ── STT button ── */
+.sttBtn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.sttBtn:hover { border-color: var(--primary); color: var(--primary); }
+.sttBtnActive { border-color: #ef4444 !important; color: #ef4444 !important; background: rgba(239,68,68,0.06) !important; animation: pulse 1s infinite; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── Selected text popup ── */
+.selectedTextPopup {
+  position: absolute;
+  z-index: 1000;
+  transform: translateX(-50%);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.35);
+  white-space: nowrap;
+  font-family: inherit;
+  transition: var(--transition);
+  pointer-events: all;
+}
+.selectedTextPopup:hover { opacity: 0.9; transform: translateX(-50%) scale(1.04); }
 .cursor { display: inline-block; color: var(--primary); animation: blink 0.7s step-end infinite; font-weight: 300; margin-left: 1px; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
