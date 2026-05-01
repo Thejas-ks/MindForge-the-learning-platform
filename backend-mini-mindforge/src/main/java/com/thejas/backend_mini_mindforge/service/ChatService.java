@@ -40,7 +40,13 @@ public class ChatService {
     @Transactional
     public ChatSendResponse send(ChatSendRequest req, String userEmail) {
         String userText = req.getMessage() == null ? "" : req.getMessage().trim();
-        if (userText.isBlank()) throw new IllegalArgumentException("Message cannot be empty");
+        boolean hasNotes = req.getNotesContext() != null && !req.getNotesContext().isBlank();
+        // Allow file-only sends (no message text) as long as notes context is present
+        if (userText.isBlank() && !hasNotes) throw new IllegalArgumentException("Message or file is required");
+
+        // Display label: use message text, or filename, or fallback
+        String displayLabel = !userText.isBlank() ? userText
+                : (req.getFilename() != null ? "📄 " + req.getFilename() : "📄 File");
 
         // Get or create conversation
         Conversation conv;
@@ -50,7 +56,7 @@ public class ChatService {
         } else {
             conv = new Conversation();
             conv.setUserEmail(userEmail);
-            conv.setTitle(userText.length() > 60 ? userText.substring(0, 60) + "…" : userText);
+            conv.setTitle(displayLabel.length() > 60 ? displayLabel.substring(0, 60) + "…" : displayLabel);
             conv.setCreatedAt(LocalDateTime.now());
             conv = conversationRepo.save(conv);
         }
@@ -67,27 +73,28 @@ public class ChatService {
                 })
                 .collect(Collectors.toList());
 
-        // Save user message
+        // Save user message — show filename label if no text
         ChatMessage userMsg = new ChatMessage();
         userMsg.setConversationId(conv.getId());
         userMsg.setUserEmail(userEmail);
         userMsg.setRole("user");
-        userMsg.setContent(userText);
+        userMsg.setContent(displayLabel);
         userMsg.setTimestamp(LocalDateTime.now());
         userMsg = messageRepo.save(userMsg);
 
-        // Call AI — prepend notes context if provided
-        String aiReply;
-        if (req.getNotesContext() != null && !req.getNotesContext().isBlank()) {
-            String contextualPrompt = "The user has provided the following notes/document as context:\n\n"
-                    + req.getNotesContext().substring(0, Math.min(req.getNotesContext().length(), 3000))
-                    + "\n\n---\n\nUsing the above notes as context, answer this question: " + userText;
-            aiReply = aiService.generateAnswerWithHistory(contextualPrompt, contextHistory);
+        // Build AI prompt — combine message + notes context
+        String aiPrompt;
+        if (hasNotes) {
+            String notesSnippet = req.getNotesContext().substring(0, Math.min(req.getNotesContext().length(), 3000));
+            aiPrompt = !userText.isBlank()
+                    ? "The user provided the following document as context:\n\n" + notesSnippet
+                      + "\n\n---\n\nUsing the above as context, answer: " + userText
+                    : "The user uploaded a document. Summarize the key concepts clearly with bullet points.\n\nContent:\n" + notesSnippet;
         } else {
-            aiReply = aiService.generateAnswerWithHistory(userText, contextHistory);
+            aiPrompt = userText;
         }
 
-        // Save assistant message — also save a Question record so quiz/flashcard APIs work
+        String aiReply = aiService.generateAnswerWithHistory(aiPrompt, contextHistory);
         Question question = new Question();
         question.setQuestion(userText);
         question.setAnswer(aiReply);
