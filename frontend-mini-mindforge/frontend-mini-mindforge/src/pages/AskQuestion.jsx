@@ -532,7 +532,7 @@ export default function AskQuestion() {
             style={{ top: popupPos.top, left: popupPos.left }}
             onMouseDown={(e) => { e.preventDefault(); handleAskSelected(); }}
           >
-            ↩ Reply
+            💬 Ask MindForge
           </button>
         )}
 
