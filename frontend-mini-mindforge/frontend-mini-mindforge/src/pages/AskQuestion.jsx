@@ -625,24 +625,6 @@ export default function AskQuestion() {
               </div>
             )}
             <div className={styles.inputBox}>
-              {/* STT button */}
-              <button
-                className={`${styles.sttBtn} ${listening ? styles.sttBtnActive : ''}`}
-                onClick={toggleSTT}
-                title={listening ? 'Stop listening' : 'Voice input'}
-                type="button"
-              >
-                {listening ? '⏹' : '🎤'}
-              </button>
-              {/* Inline attach button */}
-              <button
-                className={styles.attachBtn}
-                onClick={() => inlineFileInputRef.current?.click()}
-                title="Attach file to this message"
-                type="button"
-              >
-                📎
-              </button>
               <textarea
                 ref={textareaRef}
                 rows={1}
@@ -658,16 +640,37 @@ export default function AskQuestion() {
                 disabled={isSending}
                 className={styles.chatInput}
               />
-              <button
-                className={styles.sendBtn}
-                onClick={() => handleSend()}
-                disabled={isSending || fileStatus === 'uploading' || (!question.trim() && !attachedFile?.content && !replyText)}
-                title="Ask MindForge (Ctrl+Enter)"
-              >
-                {isSending ? '⏳' : 'Ask MindForge'}
-              </button>
+              <div className={styles.inputToolbar}>
+                <div className={styles.inputToolbarLeft}>
+                  {/* Attach button */}
+                  <button
+                    className={styles.attachBtn}
+                    onClick={() => inlineFileInputRef.current?.click()}
+                    title="Attach file (PDF, DOCX, TXT)"
+                    type="button"
+                  >
+                    📎
+                  </button>
+                  {/* STT button */}
+                  <button
+                    className={`${styles.sttBtn} ${listening ? styles.sttBtnActive : ''}`}
+                    onClick={toggleSTT}
+                    title={listening ? 'Stop listening' : 'Voice input'}
+                    type="button"
+                  >
+                    {listening ? '⏹' : '🎤'}
+                  </button>
+                </div>
+                <button
+                  className={styles.sendBtn}
+                  onClick={() => handleSend()}
+                  disabled={isSending || fileStatus === 'uploading' || (!question.trim() && !attachedFile?.content && !replyText)}
+                  title="Ask MindForge (Ctrl+Enter)"
+                >
+                  {isSending ? '⏳' : 'Ask MindForge ↑'}
+                </button>
+              </div>
             </div>
-            <p className={styles.inputHint}>Ctrl+Enter to send · Enter for new line · 🎤 voice · 📎 attach file · Select text to reply</p>
           </div>
         </div>
       </div>
