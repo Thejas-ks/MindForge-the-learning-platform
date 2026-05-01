@@ -489,8 +489,8 @@
   color: var(--text);
   font-family: inherit;
   line-height: 1.6;
-  min-height: 38px;
-  max-height: 160px;
+  min-height: 52px;
+  max-height: 220px;
   padding: 6px 0;
   box-shadow: none;
   overflow-y: auto;
@@ -525,6 +525,29 @@
   color: var(--text-dim);
   text-align: center;
 }
+
+/* ── Reply bar ── */
+.replyBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(79,70,229,0.06);
+  border-left: 3px solid var(--primary);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  animation: fadeIn 0.15s ease;
+}
+.replyBarIcon { color: var(--primary); font-size: 0.9rem; flex-shrink: 0; }
+.replyBarText { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-style: italic; }
+.replyBarClose {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-dim); font-size: 0.75rem; padding: 0; flex-shrink: 0;
+  line-height: 1;
+}
+.replyBarClose:hover { color: var(--error); }
 
 /* ── Attach button ── */
 .attachBtn {

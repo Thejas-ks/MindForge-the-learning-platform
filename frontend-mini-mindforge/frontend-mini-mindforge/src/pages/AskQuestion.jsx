@@ -317,9 +317,10 @@ export default function AskQuestion() {
   const [attachedFile, setAttachedFile] = useState(null); // { filename, content }
   const [fileStatus, setFileStatus] = useState(null); // 'uploading' | 'ready'
   const [isSending, setIsSending] = useState(false);
-  // Selected text popup
+  // Selected text → reply pin
   const [selectedText, setSelectedText] = useState('');
   const [popupPos, setPopupPos] = useState(null);
+  const [replyText, setReplyText] = useState('');
   // STT
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
@@ -337,7 +338,7 @@ export default function AskQuestion() {
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    el.style.height = Math.min(el.scrollHeight, 220) + 'px';
   }, [question]);
 
   // ── Selected text feature ──────────────────────────────────────────────────
@@ -359,12 +360,14 @@ export default function AskQuestion() {
     return () => document.removeEventListener('mouseup', handleMouseUp);
   }, []);
 
+  // Pin selected text as a reply quote into the input — do NOT send directly
   const handleAskSelected = () => {
     if (!selectedText) return;
     setPopupPos(null);
+    setReplyText(selectedText);
     setSelectedText('');
     window.getSelection()?.removeAllRanges();
-    handleSend(selectedText);
+    setTimeout(() => textareaRef.current?.focus(), 0);
   };
 
   // ── STT ───────────────────────────────────────────────────────────────────
@@ -459,11 +462,14 @@ export default function AskQuestion() {
 
   // ── Send — only sends, never uploads ─────────────────────────────────────
   const handleSend = async (overrideText) => {
-    const text = (overrideText || question).trim();
+    const baseText = (overrideText || question).trim();
+    // Prepend reply quote if present
+    const text = replyText ? `> ${replyText}\n\n${baseText}`.trim() : baseText;
     const hasFile = attachedFile?.content;
     if ((!text && !hasFile) || isSending || fileStatus === 'uploading') return;
 
     setQuestion('');
+    setReplyText('');
     setIsSending(true);
 
     const notesContext = attachedFile?.content || null;
@@ -519,14 +525,14 @@ export default function AskQuestion() {
       <Navbar />
       <div className={styles.chatPage}>
 
-        {/* Selected text popup */}
+        {/* Selected text → reply popup */}
         {popupPos && selectedText && (
           <button
             className={styles.selectedTextPopup}
             style={{ top: popupPos.top, left: popupPos.left }}
             onMouseDown={(e) => { e.preventDefault(); handleAskSelected(); }}
           >
-            💬 Ask MindForge
+            ↩ Reply
           </button>
         )}
 
@@ -555,7 +561,7 @@ export default function AskQuestion() {
             </button>
             <div>
               <h1 className={styles.title}>Ask MindForge AI</h1>
-              <p className={styles.subtitle}>Continuous AI chat with memory</p>
+              <p className={styles.subtitle}>Ask anything · upload notes · quiz yourself</p>
             </div>
             <div className={styles.topBarActions}>
               {activeConvId && (
@@ -569,8 +575,8 @@ export default function AskQuestion() {
             {showEmpty && (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>💬</span>
-                <h2 className={styles.emptyTitle}>How can I help you?</h2>
-                <p className={styles.emptySub}>Start a conversation — I remember everything you say.</p>
+                <h2 className={styles.emptyTitle}>What do you want to learn today?</h2>
+                <p className={styles.emptySub}>Ask a question, upload your notes, or pick a topic below.</p>
                 <div className={styles.suggestions}>
                   {suggestions.map(s => (
                     <button key={s} className={styles.suggestionChip} onClick={() => handleSend(s)}>{s}</button>
@@ -601,6 +607,14 @@ export default function AskQuestion() {
 
           {/* Input */}
           <div className={styles.inputArea}>
+            {/* Reply preview bar */}
+            {replyText && (
+              <div className={styles.replyBar}>
+                <span className={styles.replyBarIcon}>↩</span>
+                <span className={styles.replyBarText}>{replyText.length > 80 ? replyText.slice(0, 80) + '…' : replyText}</span>
+                <button className={styles.replyBarClose} onClick={() => setReplyText('')} title="Remove reply">✕</button>
+              </div>
+            )}
             {/* Inline attachment preview — single source of truth: fileStatus */}
             {attachedFile && (
               <div className={`${styles.attachedFileBar} ${fileStatus === 'uploading' ? styles.attachedFileUploading : ''}`}>
@@ -636,7 +650,7 @@ export default function AskQuestion() {
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (e.key === 'Enter' && e.ctrlKey) {
                     e.preventDefault();
                     handleSend();
                   }
@@ -647,13 +661,13 @@ export default function AskQuestion() {
               <button
                 className={styles.sendBtn}
                 onClick={() => handleSend()}
-                disabled={isSending || fileStatus === 'uploading' || (!question.trim() && !attachedFile?.content)}
-                title="Ask MindForge (Enter)"
+                disabled={isSending || fileStatus === 'uploading' || (!question.trim() && !attachedFile?.content && !replyText)}
+                title="Ask MindForge (Ctrl+Enter)"
               >
                 {isSending ? '⏳' : 'Ask MindForge'}
               </button>
             </div>
-            <p className={styles.inputHint}>Enter to send · Shift+Enter for new line · 🎤 voice · 📎 attach file · Select text to ask</p>
+            <p className={styles.inputHint}>Ctrl+Enter to send · Enter for new line · 🎤 voice · 📎 attach file · Select text to reply</p>
           </div>
         </div>
       </div>
