@@ -123,6 +123,8 @@ export default function Profile() {
     navigate('/login');
   };
 
+  const level = getLevel(stats.accuracy);
+
   // Recommendations
   const recs = [];
   if (streak === 0) recs.push({ icon: '🔥', text: "Complete today's brain workout to start your streak", to: '/workout' });
