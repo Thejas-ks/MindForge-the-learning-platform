@@ -5,6 +5,7 @@ import { getUser } from '../utils/auth';
 import Layout from '../components/Layout';
 import PerformanceTracker from '../components/PerformanceTracker';
 import InsightsPanel from '../components/InsightsPanel';
+import { useScrollReveal } from '../utils/useScrollReveal';
 import styles from './Dashboard.module.css';
 
 const cards = [
@@ -153,6 +154,19 @@ const cards = [
   },
 ];
 
+function Reveal({ children, delay = 0 }) {
+  const [ref, visible] = useScrollReveal(0.12);
+  return (
+    <div
+      ref={ref}
+      className={`reveal ${visible ? 'revealVisible' : ''}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [streak, setStreak] = useState(0);
   const [stats, setStats] = useState({ questions: 0, quizzes: 0, flashcards: 0 });
@@ -206,38 +220,46 @@ export default function Dashboard() {
   return (
     <Layout>
       {/* Performance Tracker */}
-      <PerformanceTracker
-        questions={stats.questions}
-        quizzes={stats.quizzes}
-        flashcards={stats.flashcards}
-        streak={streak}
-      />
+      <Reveal>
+        <PerformanceTracker
+          questions={stats.questions}
+          quizzes={stats.quizzes}
+          flashcards={stats.flashcards}
+          streak={streak}
+        />
+      </Reveal>
 
       {/* Insights Panel */}
-      <InsightsPanel
-        quizHistory={quizHistory}
-        questions={stats.questions}
-        streak={streak}
-      />
+      <Reveal delay={80}>
+        <InsightsPanel
+          quizHistory={quizHistory}
+          questions={stats.questions}
+          streak={streak}
+        />
+      </Reveal>
 
-      <div className={styles.sectionHeader}>
-        <h2 className={styles.sectionTitle}>Study Tools</h2>
-        <p className={styles.sectionSub}>Everything you need to master any subject</p>
-      </div>
+      <Reveal delay={120}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Study Tools</h2>
+          <p className={styles.sectionSub}>Everything you need to master any subject</p>
+        </div>
+      </Reveal>
 
       <div className={styles.grid}>
-        {cards.map(({ to, title, desc, tag, bg, accent, illustration }) => (
-          <div key={to} className={styles.card} onClick={() => navigate(to)}>
-            <div className={styles.cardTop} style={{ background: bg }}>
-              <span className={styles.cardTag} style={{ background: `${accent}18`, color: accent }}>{tag}</span>
-              <div className={styles.illustration}>{illustration}</div>
+        {cards.map(({ to, title, desc, tag, bg, accent, illustration }, i) => (
+          <Reveal key={to} delay={i * 60}>
+            <div className={styles.card} onClick={() => navigate(to)}>
+              <div className={styles.cardTop} style={{ background: bg }}>
+                <span className={styles.cardTag} style={{ background: `${accent}18`, color: accent }}>{tag}</span>
+                <div className={styles.illustration}>{illustration}</div>
+              </div>
+              <div className={styles.cardBottom}>
+                <h3 className={styles.cardTitle}>{title}</h3>
+                <p className={styles.cardDesc}>{desc}</p>
+                <span className={styles.cardCta} style={{ color: accent }}>Get started →</span>
+              </div>
             </div>
-            <div className={styles.cardBottom}>
-              <h3 className={styles.cardTitle}>{title}</h3>
-              <p className={styles.cardDesc}>{desc}</p>
-              <span className={styles.cardCta} style={{ color: accent }}>Get started →</span>
-            </div>
-          </div>
+          </Reveal>
         ))}
       </div>
     </Layout>

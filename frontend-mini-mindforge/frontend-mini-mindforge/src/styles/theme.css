@@ -103,6 +103,8 @@
 
 html, body, #root { height: 100%; width: 100%; }
 
+html { scroll-behavior: smooth; }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -183,4 +185,16 @@ input::placeholder, textarea::placeholder { color: var(--text-placeholder); }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-6px); }
+}
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  will-change: opacity, transform;
+}
+.reveal.revealVisible {
+  opacity: 1;
+  transform: translateY(0);
 }
