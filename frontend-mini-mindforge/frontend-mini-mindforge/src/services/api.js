@@ -73,6 +73,6 @@ export const chatHistory = (conversationId) => api.get(`/api/chat/history/${conv
 export const chatConversations = () => api.get('/api/chat/conversations');
 export const chatDeleteConversation = (conversationId) => api.delete(`/api/chat/conversations/${conversationId}`);
 export const extractChatFile = (formData) =>
-  api.post('/api/chat/extract-file', formData, { headers: { 'Content-Type': undefined }, timeout: 180000 });
+  api.post('/api/notes/upload', formData, { headers: { 'Content-Type': undefined }, timeout: 180000 });
 
 export default api;
