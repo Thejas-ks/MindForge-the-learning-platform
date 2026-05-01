@@ -72,9 +72,7 @@ export const chatSend = (data) => api.post('/api/chat/send', data);
 export const chatHistory = (conversationId) => api.get(`/api/chat/history/${conversationId}`);
 export const chatConversations = () => api.get('/api/chat/conversations');
 export const chatDeleteConversation = (conversationId) => api.delete(`/api/chat/conversations/${conversationId}`);
-
-// Notes upload
-export const uploadNotes = (formData) =>
-  api.post('/api/notes/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 180000 });
+export const extractChatFile = (formData) =>
+  api.post('/api/chat/extract-file', formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 180000 });
 
 export default api;

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { chatSend, chatHistory, chatConversations, chatDeleteConversation, generateQuiz, generateFlashcards, uploadNotes } from '../services/api';
+import { chatSend, chatHistory, chatConversations, chatDeleteConversation, generateQuiz, generateFlashcards, extractChatFile } from '../services/api';
 import { getErrorMessage } from '../utils/errorHandler';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
@@ -309,15 +309,17 @@ export default function AskQuestion() {
   const [conversations, setConversations] = useState([]);
   const [activeConvId, setActiveConvId] = useState(null);
   const [question, setQuestion] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [convLoading, setConvLoading] = useState(false);
   const [newestMsgId, setNewestMsgId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   // Global notes context (persists across messages in session)
   const [globalNotes, setGlobalNotes] = useState(null); // { filename, content }
   const [notesUploading, setNotesUploading] = useState(false);
-  // Inline attachment (per message)
+  // Inline attachment (per message) — fileStatus: 'uploading' | 'ready' | none (null)
   const [attachedFile, setAttachedFile] = useState(null); // { filename, content }
+  const [fileStatus, setFileStatus] = useState(null); // 'uploading' | 'ready'
+  const [isSending, setIsSending] = useState(false);
   // Selected text popup
   const [selectedText, setSelectedText] = useState('');
   const [popupPos, setPopupPos] = useState(null);
@@ -333,7 +335,7 @@ export default function AskQuestion() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages, isSending]);
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -403,16 +405,15 @@ export default function AskQuestion() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await uploadNotes(formData);
+      const res = await extractChatFile(formData);
       setGlobalNotes({ filename: res.data.filename, content: res.data.content });
       toast.success(`Notes uploaded: ${res.data.filename}`);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setNotesUploading(false); }
   };
 
-  // ── Inline Attachment ─────────────────────────────────────────────────────
-  // Store raw file — upload happens on send, not immediately
-  const handleInlineAttach = (e) => {
+  // ── Inline Attachment — upload immediately on select ─────────────────────
+  const handleInlineAttach = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
@@ -421,7 +422,19 @@ export default function AskQuestion() {
       toast.error('Unsupported file. Use PDF, DOCX or TXT.');
       return;
     }
-    setAttachedFile({ file, filename: file.name, content: null, status: 'pending' });
+    setFileStatus('uploading');
+    setAttachedFile({ filename: file.name, content: null });
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await extractChatFile(formData);
+      setAttachedFile({ filename: res.data.filename, content: res.data.content });
+      setFileStatus('ready');
+    } catch (err) {
+      toast.error('File upload failed: ' + getErrorMessage(err));
+      setAttachedFile(null);
+      setFileStatus(null);
+    }
   };
 
   // ── Conversations ─────────────────────────────────────────────────────────
@@ -435,13 +448,13 @@ export default function AskQuestion() {
   };
 
   const loadHistory = useCallback(async (convId) => {
-    setLoading(true);
+    setHistoryLoading(true);
     try {
       const res = await chatHistory(convId);
       setMessages(res.data || []);
       setActiveConvId(convId);
     } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setLoading(false); }
+    finally { setHistoryLoading(false); }
   }, []);
 
   const handleSelectConversation = (convId) => {
@@ -464,37 +477,32 @@ export default function AskQuestion() {
     } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
-  // ── Send ──────────────────────────────────────────────────────────────────
+  // ── Send — only sends, never uploads ─────────────────────────────────────
   const handleSend = async (overrideText) => {
     const text = (overrideText || question).trim();
-    if (!text || loading) return;
-    setQuestion('');
-    setLoading(true);
+    const hasFile = attachedFile?.content;
+    if ((!text && !hasFile) || isSending || fileStatus === 'uploading') return;
 
-    // Upload inline file now if pending, else use global notes
-    let notesContext = globalNotes?.content || null;
-    if (attachedFile?.status === 'pending') {
-      setAttachedFile(prev => ({ ...prev, status: 'uploading' }));
-      try {
-        const formData = new FormData();
-        formData.append('file', attachedFile.file);
-        const res = await uploadNotes(formData);
-        notesContext = res.data.content;
-        setAttachedFile(prev => ({ ...prev, content: res.data.content, status: 'ready' }));
-      } catch (err) {
-        toast.error('File upload failed: ' + getErrorMessage(err));
-        setAttachedFile(prev => ({ ...prev, status: 'error' }));
-        setLoading(false);
-        return;
-      }
-    }
+    setQuestion('');
+    setIsSending(true);
+
+    const notesContext = attachedFile?.content || globalNotes?.content || null;
+    const filename = attachedFile?.filename || null;
+    const displayLabel = text || (filename ? `📄 ${filename}` : '📄 File');
+
     setAttachedFile(null);
+    setFileStatus(null);
 
     const tempId = `temp-${Date.now()}`;
-    setMessages(prev => [...prev, { id: tempId, role: 'user', content: text }]);
+    setMessages(prev => [...prev, { id: tempId, role: 'user', content: displayLabel }]);
 
     try {
-      const res = await chatSend({ conversationId: activeConvId, message: text, notesContext });
+      const res = await chatSend({
+        conversationId: activeConvId,
+        message: text || null,
+        notesContext,
+        filename,
+      });
       const { conversationId, conversationTitle, userMessage, assistantMessage } = res.data;
 
       setMessages(prev => [
@@ -519,12 +527,12 @@ export default function AskQuestion() {
       setMessages(prev => prev.filter(m => m.id !== tempId));
       toast.error(getErrorMessage(err));
     } finally {
-      setLoading(false);
+      setIsSending(false);
     }
   };
 
   const suggestions = SUGGESTIONS.sort(() => Math.random() - 0.5).slice(0, 4);
-  const showEmpty = messages.length === 0 && !loading;
+  const showEmpty = messages.length === 0 && !historyLoading && !isSending;
 
   return (
     <div className={styles.pageWrapper}>
@@ -614,7 +622,7 @@ export default function AskQuestion() {
               />
             ))}
 
-            {loading && (
+            {isSending && (
               <div className={styles.typingIndicator}>
                 <span className={styles.bubbleLabel}>MindForge AI</span>
                 <div className={styles.typingDots}>
@@ -628,14 +636,13 @@ export default function AskQuestion() {
 
           {/* Input */}
           <div className={styles.inputArea}>
-            {/* Inline attachment preview */}
+            {/* Inline attachment preview — single source of truth: fileStatus */}
             {attachedFile && (
-              <div className={`${styles.attachedFileBar} ${attachedFile.status === 'uploading' ? styles.attachedFileUploading : ''}`}>
+              <div className={`${styles.attachedFileBar} ${fileStatus === 'uploading' ? styles.attachedFileUploading : ''}`}>
                 <span>📄 {attachedFile.filename}</span>
-                {attachedFile.status === 'pending' && <span className={styles.attachedFileHint}>Ready to send</span>}
-                {attachedFile.status === 'uploading' && <span className={styles.attachedFileHint}>⏳ Uploading…</span>}
-                {attachedFile.status === 'ready' && <span className={styles.attachedFileHint}>✅ Ready</span>}
-                {attachedFile.status !== 'uploading' && <button onClick={() => setAttachedFile(null)} title="Remove">✕</button>}
+                {fileStatus === 'uploading' && <span className={styles.attachedFileHint}>⏳ Uploading…</span>}
+                {fileStatus === 'ready' && <span className={styles.attachedFileHint}>✅ Ready to send</span>}
+                {fileStatus !== 'uploading' && <button onClick={() => { setAttachedFile(null); setFileStatus(null); }} title="Remove">✕</button>}
               </div>
             )}
             {globalNotes && !attachedFile && (
@@ -675,16 +682,16 @@ export default function AskQuestion() {
                     handleSend();
                   }
                 }}
-                disabled={loading}
+                disabled={isSending}
                 className={styles.chatInput}
               />
               <button
                 className={styles.sendBtn}
                 onClick={() => handleSend()}
-                disabled={loading || !question.trim()}
+                disabled={isSending || fileStatus === 'uploading' || (!question.trim() && !attachedFile?.content)}
                 title="Ask MindForge (Enter)"
               >
-                {loading ? '⏳' : 'Ask MindForge'}
+                {isSending ? '⏳' : 'Ask MindForge'}
               </button>
             </div>
             <p className={styles.inputHint}>Enter to send · Shift+Enter for new line · 🎤 voice · 📎 attach file · Select text to ask</p>
