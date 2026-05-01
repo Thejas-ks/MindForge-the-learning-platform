@@ -313,9 +313,6 @@ export default function AskQuestion() {
   const [convLoading, setConvLoading] = useState(false);
   const [newestMsgId, setNewestMsgId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  // Global notes context (persists across messages in session)
-  const [globalNotes, setGlobalNotes] = useState(null); // { filename, content }
-  const [notesUploading, setNotesUploading] = useState(false);
   // Inline attachment (per message) — fileStatus: 'uploading' | 'ready' | none (null)
   const [attachedFile, setAttachedFile] = useState(null); // { filename, content }
   const [fileStatus, setFileStatus] = useState(null); // 'uploading' | 'ready'
@@ -328,7 +325,6 @@ export default function AskQuestion() {
   const recognitionRef = useRef(null);
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
-  const globalNotesInputRef = useRef(null);
   const inlineFileInputRef = useRef(null);
 
   useEffect(() => { loadConversations(); }, []);
@@ -394,22 +390,6 @@ export default function AskQuestion() {
     recognitionRef.current = rec;
     rec.start();
     setListening(true);
-  };
-
-  // ── Global Notes Upload ───────────────────────────────────────────────────
-  const handleGlobalNotesUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-    setNotesUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await extractChatFile(formData);
-      setGlobalNotes({ filename: res.data.filename, content: res.data.content });
-      toast.success(`Notes uploaded: ${res.data.filename}`);
-    } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setNotesUploading(false); }
   };
 
   // ── Inline Attachment — upload immediately on select ─────────────────────
@@ -486,7 +466,7 @@ export default function AskQuestion() {
     setQuestion('');
     setIsSending(true);
 
-    const notesContext = attachedFile?.content || globalNotes?.content || null;
+    const notesContext = attachedFile?.content || null;
     const filename = attachedFile?.filename || null;
     const displayLabel = text || (filename ? `📄 ${filename}` : '📄 File');
 
@@ -565,8 +545,7 @@ export default function AskQuestion() {
         {/* Main chat area */}
         <div className={styles.chatMain}>
 
-          {/* Hidden file inputs */}
-          <input ref={globalNotesInputRef} type="file" accept=".pdf,.txt,.docx" style={{ display: 'none' }} onChange={handleGlobalNotesUpload} />
+          {/* Hidden file input */}
           <input ref={inlineFileInputRef} type="file" accept=".pdf,.txt,.docx" style={{ display: 'none' }} onChange={handleInlineAttach} />
 
           {/* Top bar */}
@@ -579,20 +558,6 @@ export default function AskQuestion() {
               <p className={styles.subtitle}>Continuous AI chat with memory</p>
             </div>
             <div className={styles.topBarActions}>
-              {globalNotes ? (
-                <div className={styles.notesActiveBadge}>
-                  <span>📄 {globalNotes.filename}</span>
-                  <button onClick={() => setGlobalNotes(null)} title="Remove notes">✕</button>
-                </div>
-              ) : (
-                <button
-                  className={styles.uploadNotesBtn}
-                  onClick={() => globalNotesInputRef.current?.click()}
-                  disabled={notesUploading}
-                >
-                  {notesUploading ? '⏳ Uploading…' : '📎 Upload Notes'}
-                </button>
-              )}
               {activeConvId && (
                 <button className={styles.newChatTopBtn} onClick={handleNewChat}>＋ New Chat</button>
               )}
@@ -643,12 +608,6 @@ export default function AskQuestion() {
                 {fileStatus === 'uploading' && <span className={styles.attachedFileHint}>⏳ Uploading…</span>}
                 {fileStatus === 'ready' && <span className={styles.attachedFileHint}>✅ Ready to send</span>}
                 {fileStatus !== 'uploading' && <button onClick={() => { setAttachedFile(null); setFileStatus(null); }} title="Remove">✕</button>}
-              </div>
-            )}
-            {globalNotes && !attachedFile && (
-              <div className={styles.attachedFileBar}>
-                <span>📄 {globalNotes.filename}</span>
-                <span className={styles.attachedFileHint}>Global notes active for all messages</span>
               </div>
             )}
             <div className={styles.inputBox}>
