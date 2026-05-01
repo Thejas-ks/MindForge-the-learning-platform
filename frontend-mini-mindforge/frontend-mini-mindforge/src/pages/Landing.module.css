@@ -896,9 +896,9 @@
    RESPONSIVE
 ══════════════════════════════════════ */
 @media (max-width: 900px) {
-  .heroInner { flex-direction: column; text-align: center; gap: 3rem; }
-  .hero { padding: 7rem 1.5rem 4rem; }
-  .orbitSystem { width: 320px; height: 320px; transform: scale(0.65); }
+  .heroInner { flex-direction: column; text-align: center; gap: 2rem; }
+  .hero { padding: 7rem 1.5rem 3rem; }
+  .orbitSystem { width: 300px; height: 300px; transform: scale(0.6); transform-origin: center; }
   .heroCtas { justify-content: center; }
   .heroStats { justify-content: center; }
   .heroIllustration { width: 260px; height: 260px; }
@@ -912,12 +912,35 @@
   .navLinks { display: none; }
   .navInner { gap: 0; }
   .navActions { flex: 0 0 auto; }
+  .navLogo { flex: 0 0 auto; }
+  .heroContent { max-width: 100%; }
+  .featuresSection { padding: 4rem 1.25rem; }
+  .howSection { padding: 4rem 1.25rem; }
+  .ctaSection { padding: 5rem 1.25rem; }
 }
 @media (max-width: 600px) {
   .heroTitle { font-size: 2.2rem; }
   .ctaTitle { font-size: 2rem; }
-  .featureCardInner { padding: 1.5rem; }
+  .featureCardInner { padding: 1.25rem; }
   .footer { flex-direction: column; align-items: center; text-align: center; }
+  .heroStats { gap: 1rem; }
+  .stat { min-width: 60px; }
+  .steps { gap: 1rem; }
+  .step { min-width: unset; max-width: 100%; width: 100%; }
+  .ctaButtons { flex-direction: column; align-items: center; }
+  .ctaPrimary, .ctaSecondary { width: 100%; text-align: center; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .hero { padding: 6rem 1rem 2.5rem; }
+  .heroTitle { font-size: 1.9rem; }
+  .heroSub { font-size: 0.95rem; }
+  .heroBadge { font-size: 0.72rem; }
+  .orbitSystem { transform: scale(0.5); margin: -60px auto; }
+  .navCta { padding: 0.4rem 0.9rem; font-size: 0.8rem; }
+  .navLogin { display: none; }
+  .heroStats { gap: 0.75rem; }
+  .statNum { font-size: 1.1rem; }
+  .sectionTitle { font-size: 1.6rem; }
 }
 
 /* ── Missing utility classes ── */

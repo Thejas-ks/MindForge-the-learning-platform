@@ -653,3 +653,31 @@
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebarOpen  { width: 0; }
+  .sidebarClosed { width: 0; }
+  .chatMain { padding: 0.75rem 1rem; }
+  .title { font-size: 1.1rem; }
+  .subtitle { display: none; }
+  .userText { max-width: 90%; font-size: 0.9rem; }
+  .aiBubble { max-width: 100%; }
+  .answerBubble { padding: 1rem 1.1rem; }
+  .inputBox { padding: 0.5rem 0.6rem 0.4rem; }
+  .chatInput { font-size: 0.9rem; }
+  .sendBtn { padding: 0 0.75rem; font-size: 0.78rem; }
+  .featureCardInner { padding: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .chatMain { padding: 0.5rem 0.75rem; }
+  .chatTopBar { gap: 0.5rem; }
+  .title { font-size: 1rem; }
+  .sendBtn { padding: 0 0.6rem; font-size: 0.75rem; }
+  .messagesArea { gap: 1rem; }
+  .userText { font-size: 0.875rem; }
+  .answerBubble { padding: 0.875rem 1rem; }
+  .actions { gap: 0.4rem; }
+  .actionBtn { padding: 0.3rem 0.65rem; font-size: 0.75rem; }
+}

@@ -256,3 +256,9 @@
   .inner { padding: 0 1rem; }
   .historyBtn, .uploadBtn { display: none; }
 }
+
+@media (max-width: 480px) {
+  .logoutBtn { display: none; }
+  .right { gap: 0.4rem; }
+  .avatar { width: 30px; height: 30px; font-size: 0.72rem; }
+}
