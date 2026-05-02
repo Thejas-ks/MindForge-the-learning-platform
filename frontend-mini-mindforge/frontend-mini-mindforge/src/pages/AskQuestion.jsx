@@ -541,12 +541,16 @@ export default function AskQuestion() {
           <ConversationSidebar
             conversations={conversations}
             activeId={activeConvId}
-            onSelect={handleSelectConversation}
-            onNew={handleNewChat}
+            onSelect={(id) => { handleSelectConversation(id); setSidebarOpen(false); }}
+            onNew={() => { handleNewChat(); setSidebarOpen(false); }}
             onDelete={handleDeleteConversation}
             loading={convLoading}
           />
         </div>
+        {/* Dim overlay — closes drawer on tap (mobile only, hidden on desktop via CSS) */}
+        {sidebarOpen && (
+          <div className={styles.sidebarOverlay} onClick={() => setSidebarOpen(false)} />
+        )}
 
         {/* Main chat area */}
         <div className={styles.chatMain}>

@@ -656,8 +656,31 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .sidebarOpen  { width: 0; }
+  /* Sidebar becomes a fixed overlay drawer */
+  .sidebarWrapper {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    height: calc(100vh - var(--navbar-height));
+    z-index: 300;
+    border-right: none;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  }
+  .sidebarOpen  { width: 260px; }
   .sidebarClosed { width: 0; }
+  .convSidebar  { width: 260px; }
+
+  /* Dim overlay behind open drawer */
+  .sidebarOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: var(--navbar-height);
+    background: rgba(0,0,0,0.45);
+    z-index: 299;
+    animation: fadeIn 0.2s ease;
+  }
+
   .chatMain { padding: 0.75rem 1rem; }
   .title { font-size: 1.1rem; }
   .subtitle { display: none; }
@@ -667,8 +690,10 @@
   .inputBox { padding: 0.5rem 0.6rem 0.4rem; }
   .chatInput { font-size: 0.9rem; }
   .sendBtn { padding: 0 0.75rem; font-size: 0.78rem; }
-  .featureCardInner { padding: 1rem; }
 }
+
+/* Hide overlay on desktop */
+.sidebarOverlay { display: none; }
 
 @media (max-width: 480px) {
   .chatMain { padding: 0.5rem 0.75rem; }

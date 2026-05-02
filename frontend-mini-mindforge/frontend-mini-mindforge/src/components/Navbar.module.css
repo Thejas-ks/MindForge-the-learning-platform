@@ -18,6 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  overflow: hidden;
 }
 
 /* Logo — extreme left */
@@ -116,6 +117,8 @@
   align-items: center;
   gap: 0.6rem;
   flex-shrink: 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .uploadBtn {
@@ -257,8 +260,15 @@
   .historyBtn, .uploadBtn { display: none; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .logoutBtn { display: none; }
-  .right { gap: 0.4rem; }
+  .right { gap: 0.5rem; }
+}
+
+@media (max-width: 480px) {
+  .right { gap: 0.35rem; }
   .avatar { width: 30px; height: 30px; font-size: 0.72rem; }
+  .toggleTrack { width: 40px; height: 22px; }
+  .toggleThumb { width: 16px; height: 16px; }
+  .toggleThumbDark { transform: translateX(18px); }
 }
