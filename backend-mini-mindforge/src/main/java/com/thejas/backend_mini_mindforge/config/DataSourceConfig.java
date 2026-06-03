@@ -28,7 +28,8 @@ public class DataSourceConfig {
         // Render provides: postgresql://user:pass@host:port/dbname
         if (rawUrl.startsWith("postgresql://") || rawUrl.startsWith("postgres://")) {
             URI uri = new URI(rawUrl.replace("postgres://", "postgresql://"));
-            String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + uri.getPort() + uri.getPath();
+            int port = uri.getPort() == -1 ? 5432 : uri.getPort();
+            String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + uri.getPath();
             ds.setJdbcUrl(jdbcUrl);
             if (uri.getUserInfo() != null) {
                 String[] userInfo = uri.getUserInfo().split(":", 2);
