@@ -23,10 +23,10 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() throws Exception {
         HikariDataSource ds = new HikariDataSource();
-        ds.setDriverClassName("org.postgresql.Driver");
 
         // Render provides: postgresql://user:pass@host:port/dbname
         if (rawUrl.startsWith("postgresql://") || rawUrl.startsWith("postgres://")) {
+            ds.setDriverClassName("org.postgresql.Driver");
             URI uri = new URI(rawUrl.replace("postgres://", "postgresql://"));
             int port = uri.getPort() == -1 ? 5432 : uri.getPort();
             String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + uri.getPath();
@@ -39,8 +39,14 @@ public class DataSourceConfig {
                 ds.setUsername(username);
                 ds.setPassword(password);
             }
+        } else if (rawUrl.startsWith("jdbc:mysql://")) {
+            ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            ds.setJdbcUrl(rawUrl);
+            ds.setUsername(username);
+            ds.setPassword(password);
         } else {
-            // Already in jdbc:postgresql:// format
+            // jdbc:postgresql:// format
+            ds.setDriverClassName("org.postgresql.Driver");
             ds.setJdbcUrl(rawUrl);
             ds.setUsername(username);
             ds.setPassword(password);
