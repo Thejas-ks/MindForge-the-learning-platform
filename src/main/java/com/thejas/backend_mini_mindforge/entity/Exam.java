@@ -36,6 +36,13 @@ public class Exam {
     @Column(nullable = false)
     private ExamStatus status = ExamStatus.DRAFT;
 
+    // null = unlimited attempts
+    private Integer maxAttempts;
+
+    // null = always open
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
     // Email of the user who created the exam
     @Column(nullable = false)
     private String createdBy;

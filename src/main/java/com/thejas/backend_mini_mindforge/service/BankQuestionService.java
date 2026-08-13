@@ -5,6 +5,7 @@ import com.thejas.backend_mini_mindforge.dto.request.QuestionOptionRequest;
 import com.thejas.backend_mini_mindforge.dto.response.BankQuestionResponse;
 import com.thejas.backend_mini_mindforge.entity.*;
 import com.thejas.backend_mini_mindforge.repository.BankQuestionRepository;
+import com.thejas.backend_mini_mindforge.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +75,7 @@ public class BankQuestionService {
 
     private BankQuestion findOwned(Long id, String createdBy) {
         return questionRepository.findByIdAndCreatedBy(id, createdBy)
-                .orElseThrow(() -> new RuntimeException("Question not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + id));
     }
 
     private void mapRequestToEntity(BankQuestionRequest req, BankQuestion question) {

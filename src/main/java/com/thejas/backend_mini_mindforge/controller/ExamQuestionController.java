@@ -23,7 +23,7 @@ public class ExamQuestionController {
     }
 
     // Bulk add questions to an exam
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PostMapping
     public ResponseEntity<BulkAddSummaryResponse> bulkAdd(@PathVariable Long examId,
                                                           @RequestBody BulkAddQuestionsRequest req,
@@ -32,7 +32,7 @@ public class ExamQuestionController {
     }
 
     // Add a single question with optional marksOverride
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PostMapping("/single")
     public ResponseEntity<ExamQuestionResponse> addSingle(@PathVariable Long examId,
                                                           @RequestBody ExamQuestionRequest req,
@@ -41,7 +41,7 @@ public class ExamQuestionController {
     }
 
     // Get all questions in an exam ordered by questionOrder
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @GetMapping
     public ResponseEntity<List<ExamQuestionResponse>> getAll(@PathVariable Long examId,
                                                              Authentication auth) {
@@ -49,7 +49,7 @@ public class ExamQuestionController {
     }
 
     // Get questions filtered by section
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @GetMapping("/section/{section}")
     public ResponseEntity<List<ExamQuestionResponse>> getBySection(@PathVariable Long examId,
                                                                    @PathVariable String section,
@@ -58,7 +58,7 @@ public class ExamQuestionController {
     }
 
     // Update marksOverride, section, or mandatory for a specific exam-question link
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PatchMapping("/{examQuestionId}")
     public ResponseEntity<ExamQuestionResponse> update(@PathVariable Long examId,
                                                        @PathVariable Long examQuestionId,
@@ -68,7 +68,7 @@ public class ExamQuestionController {
     }
 
     // Remove a single question from the exam by bankQuestionId
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @DeleteMapping("/{bankQuestionId}")
     public ResponseEntity<Void> remove(@PathVariable Long examId,
                                        @PathVariable Long bankQuestionId,
@@ -78,7 +78,7 @@ public class ExamQuestionController {
     }
 
     // Remove all questions from the exam
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @DeleteMapping
     public ResponseEntity<Void> removeAll(@PathVariable Long examId, Authentication auth) {
         examQuestionService.removeAll(examId, auth.getName());

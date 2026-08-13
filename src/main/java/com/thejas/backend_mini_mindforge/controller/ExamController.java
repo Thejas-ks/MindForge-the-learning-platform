@@ -20,15 +20,15 @@ public class ExamController {
         this.examService = examService;
     }
 
-    // Create exam — ADMIN only
-    @PreAuthorize("hasRole('ADMIN')")
+    // Create exam — TEACHER or ADMIN
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PostMapping
     public ResponseEntity<Exam> create(@RequestBody ExamRequest req, Authentication auth) {
         return ResponseEntity.ok(examService.create(req, auth.getName()));
     }
 
-    // Get all exams created by the authenticated admin
-    @PreAuthorize("hasRole('ADMIN')")
+    // Get all exams created by the authenticated user
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @GetMapping
     public ResponseEntity<List<Exam>> getAll(Authentication auth) {
         return ResponseEntity.ok(examService.getAll(auth.getName()));
@@ -41,14 +41,14 @@ public class ExamController {
     }
 
     // Get single exam by ID — only the creator can access
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @GetMapping("/{id}")
     public ResponseEntity<Exam> getById(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(examService.getById(id, auth.getName()));
     }
 
     // Update exam — only the creator can update
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PutMapping("/{id}")
     public ResponseEntity<Exam> update(@PathVariable Long id,
                                        @RequestBody ExamRequest req,
@@ -57,7 +57,7 @@ public class ExamController {
     }
 
     // Delete exam — only the creator can delete
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         examService.delete(id, auth.getName());

@@ -2,8 +2,11 @@ package com.thejas.backend_mini_mindforge.service;
 
 import com.thejas.backend_mini_mindforge.dto.request.ExamRequest;
 import com.thejas.backend_mini_mindforge.entity.Exam;
+import com.thejas.backend_mini_mindforge.entity.ExamSettings;
 import com.thejas.backend_mini_mindforge.entity.ExamStatus;
 import com.thejas.backend_mini_mindforge.repository.ExamRepository;
+import com.thejas.backend_mini_mindforge.repository.ExamSettingsRepository;
+import com.thejas.backend_mini_mindforge.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +16,11 @@ import java.util.List;
 public class ExamService {
 
     private final ExamRepository examRepository;
+    private final ExamSettingsRepository examSettingsRepository;
 
-    public ExamService(ExamRepository examRepository) {
+    public ExamService(ExamRepository examRepository, ExamSettingsRepository examSettingsRepository) {
         this.examRepository = examRepository;
+        this.examSettingsRepository = examSettingsRepository;
     }
 
     public Exam create(ExamRequest req, String createdBy) {
@@ -28,7 +33,14 @@ public class ExamService {
         exam.setPassMarks(req.getPassMarks());
         exam.setStatus(parseStatus(req.getStatus(), ExamStatus.DRAFT));
         exam.setCreatedBy(createdBy);
-        return examRepository.save(exam);
+        exam.setMaxAttempts(req.getMaxAttempts());
+        exam.setStartTime(req.getStartTime());
+        exam.setEndTime(req.getEndTime());
+        Exam saved = examRepository.save(exam);
+        ExamSettings settings = new ExamSettings();
+        settings.setExam(saved);
+        examSettingsRepository.save(settings);
+        return saved;
     }
 
     public List<Exam> getAll(String createdBy) {
@@ -41,7 +53,7 @@ public class ExamService {
 
     public Exam getById(Long id, String createdBy) {
         return examRepository.findByIdAndCreatedBy(id, createdBy)
-                .orElseThrow(() -> new RuntimeException("Exam not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Exam not found with id: " + id));
     }
 
     @Transactional
@@ -53,6 +65,9 @@ public class ExamService {
         exam.setDurationMinutes(req.getDurationMinutes());
         exam.setTotalMarks(req.getTotalMarks());
         exam.setPassMarks(req.getPassMarks());
+        exam.setMaxAttempts(req.getMaxAttempts());
+        exam.setStartTime(req.getStartTime());
+        exam.setEndTime(req.getEndTime());
         if (req.getStatus() != null) {
             exam.setStatus(parseStatus(req.getStatus(), exam.getStatus()));
         }

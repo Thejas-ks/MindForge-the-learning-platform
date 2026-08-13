@@ -8,6 +8,7 @@ import com.thejas.backend_mini_mindforge.entity.*;
 import com.thejas.backend_mini_mindforge.repository.BankQuestionRepository;
 import com.thejas.backend_mini_mindforge.repository.ExamQuestionRepository;
 import com.thejas.backend_mini_mindforge.repository.ExamRepository;
+import com.thejas.backend_mini_mindforge.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +59,7 @@ public class ExamQuestionService {
                 continue;
             }
             BankQuestion bankQuestion = bankQuestionRepository.findById(bankQuestionId)
-                    .orElseThrow(() -> new RuntimeException("BankQuestion not found with id: " + bankQuestionId));
+                    .orElseThrow(() -> new ResourceNotFoundException("BankQuestion not found with id: " + bankQuestionId));
 
             ExamQuestion eq = new ExamQuestion();
             eq.setExam(exam);
@@ -90,7 +91,7 @@ public class ExamQuestionService {
             throw new IllegalArgumentException("Question " + req.getBankQuestionId() + " is already in this exam");
 
         BankQuestion bankQuestion = bankQuestionRepository.findById(req.getBankQuestionId())
-                .orElseThrow(() -> new RuntimeException("BankQuestion not found with id: " + req.getBankQuestionId()));
+                .orElseThrow(() -> new ResourceNotFoundException("BankQuestion not found with id: " + req.getBankQuestionId()));
 
         if (req.getMarksOverride() != null && req.getMarksOverride() < 1)
             throw new IllegalArgumentException("marksOverride must be at least 1");
@@ -134,7 +135,7 @@ public class ExamQuestionService {
         findOwnedExam(examId, createdBy);
         ExamQuestion eq = examQuestionRepository.findById(examQuestionId)
                 .filter(e -> e.getExam().getId().equals(examId))
-                .orElseThrow(() -> new RuntimeException("ExamQuestion not found with id: " + examQuestionId));
+                .orElseThrow(() -> new ResourceNotFoundException("ExamQuestion not found with id: " + examQuestionId));
 
         if (req.getMarksOverride() != null && req.getMarksOverride() < 1)
             throw new IllegalArgumentException("marksOverride must be at least 1");
@@ -152,7 +153,7 @@ public class ExamQuestionService {
     public void remove(Long examId, Long bankQuestionId, String createdBy) {
         findOwnedExam(examId, createdBy);
         if (!examQuestionRepository.existsByExamIdAndBankQuestionId(examId, bankQuestionId))
-            throw new RuntimeException("Question " + bankQuestionId + " is not in exam " + examId);
+            throw new ResourceNotFoundException("Question " + bankQuestionId + " is not in exam " + examId);
         examQuestionRepository.deleteByExamIdAndBankQuestionId(examId, bankQuestionId);
     }
 
@@ -166,7 +167,7 @@ public class ExamQuestionService {
 
     private Exam findOwnedExam(Long examId, String createdBy) {
         return examRepository.findByIdAndCreatedBy(examId, createdBy)
-                .orElseThrow(() -> new RuntimeException("Exam not found with id: " + examId));
+                .orElseThrow(() -> new ResourceNotFoundException("Exam not found with id: " + examId));
     }
 
     private ExamSection parseSection(String value, ExamSection fallback) {

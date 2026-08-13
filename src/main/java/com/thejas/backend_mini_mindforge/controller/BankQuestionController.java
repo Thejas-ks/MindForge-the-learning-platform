@@ -20,17 +20,17 @@ public class BankQuestionController {
         this.questionService = questionService;
     }
 
-    // Create question — ADMIN only
-    @PreAuthorize("hasRole('ADMIN')")
+    // Create question — TEACHER or ADMIN
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PostMapping
     public ResponseEntity<BankQuestionResponse> create(@RequestBody BankQuestionRequest req,
                                                        Authentication auth) {
         return ResponseEntity.ok(questionService.create(req, auth.getName()));
     }
 
-    // Get all questions created by the authenticated admin
+    // Get all questions created by the authenticated user
     // Optional filters: ?difficulty=EASY or ?topic=Java
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @GetMapping
     public ResponseEntity<List<BankQuestionResponse>> getAll(
             @RequestParam(required = false) String difficulty,
@@ -46,7 +46,7 @@ public class BankQuestionController {
     }
 
     // Get single question by ID — only the creator can access
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @GetMapping("/{id}")
     public ResponseEntity<BankQuestionResponse> getById(@PathVariable Long id,
                                                         Authentication auth) {
@@ -54,7 +54,7 @@ public class BankQuestionController {
     }
 
     // Update question — only the creator can update
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @PutMapping("/{id}")
     public ResponseEntity<BankQuestionResponse> update(@PathVariable Long id,
                                                        @RequestBody BankQuestionRequest req,
@@ -63,7 +63,7 @@ public class BankQuestionController {
     }
 
     // Delete question — only the creator can delete
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         questionService.delete(id, auth.getName());
