@@ -6,7 +6,10 @@ import com.thejas.backend_mini_mindforge.dto.response.SavedAnswerView;
 import com.thejas.backend_mini_mindforge.dto.response.StudentAnswerResponse;
 import com.thejas.backend_mini_mindforge.entity.*;
 import com.thejas.backend_mini_mindforge.exception.ResourceNotFoundException;
-import com.thejas.backend_mini_mindforge.repository.*;
+import com.thejas.backend_mini_mindforge.repository.BankQuestionRepository;
+import com.thejas.backend_mini_mindforge.repository.ExamAttemptRepository;
+import com.thejas.backend_mini_mindforge.repository.ExamQuestionRepository;
+import com.thejas.backend_mini_mindforge.repository.StudentAnswerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,18 +26,15 @@ public class StudentAnswerService {
     private final ExamAttemptRepository attemptRepository;
     private final BankQuestionRepository bankQuestionRepository;
     private final ExamQuestionRepository examQuestionRepository;
-    private final QuestionOptionRepository optionRepository;
 
     public StudentAnswerService(StudentAnswerRepository answerRepository,
                                  ExamAttemptRepository attemptRepository,
                                  BankQuestionRepository bankQuestionRepository,
-                                 ExamQuestionRepository examQuestionRepository,
-                                 QuestionOptionRepository optionRepository) {
+                                 ExamQuestionRepository examQuestionRepository) {
         this.answerRepository = answerRepository;
         this.attemptRepository = attemptRepository;
         this.bankQuestionRepository = bankQuestionRepository;
         this.examQuestionRepository = examQuestionRepository;
-        this.optionRepository = optionRepository;
     }
 
     @Transactional
