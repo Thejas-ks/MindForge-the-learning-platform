@@ -11,6 +11,7 @@ const navLinks = [
   { to: '/quiz', label: 'Quiz' },
   { to: '/flashcards', label: 'Flashcards' },
   { to: '/workout', label: 'Brain Workout' },
+  { to: '/exams', label: 'Exams' },
 ];
 
 export default function Navbar() {

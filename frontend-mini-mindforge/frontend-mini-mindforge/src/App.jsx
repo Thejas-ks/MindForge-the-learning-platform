@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { isAuthenticated } from './utils/auth';
+import { isAuthenticated, getUserRole } from './utils/auth';
 import { useTheme } from './utils/ThemeContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -13,6 +13,9 @@ import FlashcardsPage from './pages/FlashcardsPage';
 import History from './pages/History';
 import BrainWorkout from './pages/BrainWorkout';
 import Profile from './pages/Profile';
+import ExamList from './pages/exam/ExamList';
+import ExamAttempt from './pages/exam/ExamAttempt';
+import ExamResult from './pages/exam/ExamResult';
 
 function PrivateRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" replace />;
@@ -20,6 +23,12 @@ function PrivateRoute({ children }) {
 
 function PublicRoute({ children }) {
   return !isAuthenticated() ? children : <Navigate to="/dashboard" replace />;
+}
+
+function RoleRoute({ children, roles }) {
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+  if (!roles.includes(getUserRole())) return <Navigate to="/dashboard" replace />;
+  return children;
 }
 
 function AppToaster() {
@@ -59,6 +68,9 @@ export default function App() {
         <Route path="/flashcards" element={<PrivateRoute><FlashcardsPage /></PrivateRoute>} />
         <Route path="/workout"    element={<PrivateRoute><BrainWorkout /></PrivateRoute>} />
         <Route path="/profile"    element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/exams"                      element={<PrivateRoute><ExamList /></PrivateRoute>} />
+        <Route path="/attempts/:attemptId"         element={<PrivateRoute><ExamAttempt /></PrivateRoute>} />
+        <Route path="/attempts/:attemptId/result"  element={<PrivateRoute><ExamResult /></PrivateRoute>} />
         <Route path="*"           element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

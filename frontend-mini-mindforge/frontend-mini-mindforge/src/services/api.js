@@ -76,3 +76,37 @@ export const extractChatFile = (formData) =>
   api.post('/api/notes/upload', formData, { headers: { 'Content-Type': undefined }, timeout: 180000 });
 
 export default api;
+
+// ─── Examination ─────────────────────────────────────────────────────────────
+
+// Question Bank
+export const createQuestion    = (data) => api.post('/api/question-bank', data);
+export const getQuestions      = (params) => api.get('/api/question-bank', { params });
+export const getQuestionById   = (id) => api.get(`/api/question-bank/${id}`);
+export const updateQuestion    = (id, data) => api.put(`/api/question-bank/${id}`, data);
+export const deleteQuestion    = (id) => api.delete(`/api/question-bank/${id}`);
+
+// Exams
+export const createExam        = (data) => api.post('/api/exams', data);
+export const getExams          = () => api.get('/api/exams');
+export const getPublishedExams = () => api.get('/api/exams/published');
+export const getExamById       = (id) => api.get(`/api/exams/${id}`);
+export const updateExam        = (id, data) => api.put(`/api/exams/${id}`, data);
+export const deleteExam        = (id) => api.delete(`/api/exams/${id}`);
+
+// Exam Questions
+export const addQuestionsToExam     = (examId, data) => api.post(`/api/exams/${examId}/questions`, data);
+export const addSingleQuestionToExam = (examId, data) => api.post(`/api/exams/${examId}/questions/single`, data);
+export const getExamQuestions       = (examId) => api.get(`/api/exams/${examId}/questions`);
+export const updateExamQuestion     = (examId, eqId, data) => api.patch(`/api/exams/${examId}/questions/${eqId}`, data);
+export const removeExamQuestion     = (examId, bqId) => api.delete(`/api/exams/${examId}/questions/${bqId}`);
+
+// Attempts
+export const startExam          = (examId) => api.post(`/api/exams/${examId}/start`);
+export const getMyAttempts      = () => api.get('/api/my-attempts');
+export const getAttemptById     = (attemptId) => api.get(`/api/attempts/${attemptId}`);
+export const submitAttempt      = (attemptId) => api.post(`/api/attempts/${attemptId}/submit`);
+export const getAttemptQuestions = (attemptId) => api.get(`/api/attempts/${attemptId}/questions`);
+export const getAttemptAnswers  = (attemptId) => api.get(`/api/attempts/${attemptId}/answers`);
+export const saveAttemptAnswer  = (attemptId, questionId, data) => api.put(`/api/attempts/${attemptId}/answers/${questionId}`, data);
+export const evaluateAttempt    = (attemptId) => api.post(`/api/attempts/${attemptId}/evaluate`);

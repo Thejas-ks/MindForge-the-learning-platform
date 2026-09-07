@@ -12,3 +12,4 @@ export const getUser = () => {
   }
 };
 export const isAuthenticated = () => !!getToken();
+export const getUserRole = () => getUser()?.role || null;
