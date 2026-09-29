@@ -5,6 +5,7 @@ import com.thejas.backend_mini_mindforge.dto.response.ChatSendResponse;
 import com.thejas.backend_mini_mindforge.entity.ChatMessage;
 import com.thejas.backend_mini_mindforge.entity.Conversation;
 import com.thejas.backend_mini_mindforge.entity.Question;
+import com.thejas.backend_mini_mindforge.exception.ResourceNotFoundException;
 import com.thejas.backend_mini_mindforge.repository.QuestionRepository;
 import com.thejas.backend_mini_mindforge.repository.ChatMessageRepository;
 import com.thejas.backend_mini_mindforge.repository.ConversationRepository;
@@ -52,7 +53,7 @@ public class ChatService {
         Conversation conv;
         if (req.getConversationId() != null) {
             conv = conversationRepo.findByIdAndUserEmail(req.getConversationId(), userEmail)
-                    .orElseThrow(() -> new RuntimeException("Conversation not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
         } else {
             conv = new Conversation();
             conv.setUserEmail(userEmail);
@@ -115,7 +116,7 @@ public class ChatService {
 
     public List<ChatMessage> getHistory(Long conversationId, String userEmail) {
         conversationRepo.findByIdAndUserEmail(conversationId, userEmail)
-                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
         return messageRepo.findByConversationIdOrderByTimestampAsc(conversationId);
     }
 
@@ -126,7 +127,7 @@ public class ChatService {
     @Transactional
     public void deleteConversation(Long conversationId, String userEmail) {
         conversationRepo.findByIdAndUserEmail(conversationId, userEmail)
-                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
         messageRepo.deleteByConversationId(conversationId);
         conversationRepo.deleteByIdAndUserEmail(conversationId, userEmail);
     }

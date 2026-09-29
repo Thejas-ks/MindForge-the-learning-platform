@@ -1,0 +1,176 @@
+.page { width: 100%; }
+
+/* ── Header ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.825rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0 0 0.5rem 0;
+  transition: var(--transition);
+}
+.backBtn:hover { color: var(--primary); }
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.examMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.metaChip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+}
+
+/* ── Summary strip ── */
+.summaryStrip {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 80px;
+}
+
+.summaryValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* ── Attempt list ── */
+.attemptList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.attemptCard { padding: 1rem 1.25rem; }
+
+.attemptRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.attemptMain { flex: 1; min-width: 0; }
+
+.attemptTop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.studentEmail {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.attemptMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.metaLabel { color: var(--text-dim); }
+
+.metaValue {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.attemptActions {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ── Badges ── */
+.badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.dimText {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* ── Empty state ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 2rem;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  text-align: center;
+}
+.empty span { font-size: 2.5rem; }
+.emptyHint { font-size: 0.825rem; color: var(--text-dim); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .pageHeader { flex-direction: column; }
+  .attemptRow { flex-direction: column; }
+  .attemptActions { align-self: flex-end; }
+  .summaryStrip { gap: 0.75rem; }
+}

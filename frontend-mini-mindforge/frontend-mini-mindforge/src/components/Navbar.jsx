@@ -5,7 +5,7 @@ import { useTheme } from '../utils/ThemeContext';
 import { MindForgeLogoFull } from './MindForgeLogo';
 import styles from './Navbar.module.css';
 
-const navLinks = [
+const studentLinks = [
   { to: '/dashboard', label: 'Home' },
   { to: '/ask', label: 'Ask AI' },
   { to: '/quiz', label: 'Quiz' },
@@ -14,10 +14,18 @@ const navLinks = [
   { to: '/exams', label: 'Exams' },
 ];
 
+const teacherLinks = [
+  { to: '/dashboard', label: 'Home' },
+  { to: '/teacher/exams', label: 'My Exams' },
+  { to: '/teacher/question-bank', label: 'Question Bank' },
+];
+
 export default function Navbar() {
   const navigate = useNavigate();
   const user = getUser();
   const { dark, toggle } = useTheme();
+  const isTeacher = user?.role === 'TEACHER' || user?.role === 'ADMIN';
+  const navLinks = isTeacher ? teacherLinks : studentLinks;
 
   const handleLogout = () => {
     removeToken();

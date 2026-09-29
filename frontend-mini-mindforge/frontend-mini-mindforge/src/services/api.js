@@ -80,26 +80,35 @@ export default api;
 // ─── Examination ─────────────────────────────────────────────────────────────
 
 // Question Bank
-export const createQuestion    = (data) => api.post('/api/question-bank', data);
-export const getQuestions      = (params) => api.get('/api/question-bank', { params });
-export const getQuestionById   = (id) => api.get(`/api/question-bank/${id}`);
-export const updateQuestion    = (id, data) => api.put(`/api/question-bank/${id}`, data);
-export const deleteQuestion    = (id) => api.delete(`/api/question-bank/${id}`);
+export const createQuestion       = (data) => api.post('/api/question-bank', data);
+export const createQuestionDraft  = (data) => api.post('/api/question-bank/draft', data);
+export const finalizeQuestionDraft = (id, data) => api.post(`/api/question-bank/${id}/finalize`, data);
+export const getQuestions         = (params) => api.get('/api/question-bank', { params });
+export const getQuestionDrafts    = (params) => api.get('/api/question-bank/drafts', { params });
+export const getQuestionById      = (id) => api.get(`/api/question-bank/${id}`);
+export const updateQuestion       = (id, data) => api.put(`/api/question-bank/${id}`, data);
+export const deleteQuestion       = (id) => api.delete(`/api/question-bank/${id}`);
 
 // Exams
 export const createExam        = (data) => api.post('/api/exams', data);
 export const getExams          = () => api.get('/api/exams');
 export const getPublishedExams = () => api.get('/api/exams/published');
 export const getExamById       = (id) => api.get(`/api/exams/${id}`);
+export const getExamPreview    = (id) => api.get(`/api/exams/${id}/preview`);
 export const updateExam        = (id, data) => api.put(`/api/exams/${id}`, data);
+export const publishExam       = (id) => api.post(`/api/exams/${id}/publish`);
+export const archiveExam       = (id) => api.post(`/api/exams/${id}/archive`);
 export const deleteExam        = (id) => api.delete(`/api/exams/${id}`);
 
 // Exam Questions
-export const addQuestionsToExam     = (examId, data) => api.post(`/api/exams/${examId}/questions`, data);
+export const addQuestionsToExam      = (examId, data) => api.post(`/api/exams/${examId}/questions`, data);
 export const addSingleQuestionToExam = (examId, data) => api.post(`/api/exams/${examId}/questions/single`, data);
-export const getExamQuestions       = (examId) => api.get(`/api/exams/${examId}/questions`);
-export const updateExamQuestion     = (examId, eqId, data) => api.patch(`/api/exams/${examId}/questions/${eqId}`, data);
-export const removeExamQuestion     = (examId, bqId) => api.delete(`/api/exams/${examId}/questions/${bqId}`);
+export const bulkCreateAndAssign     = (examId, data) => api.post(`/api/exams/${examId}/questions/bulk-create`, data);
+export const finalizeAndAssign       = (examId, data) => api.post(`/api/exams/${examId}/questions/finalize-and-assign`, data);
+export const saveDraftQuestions      = (examId, data) => api.post(`/api/exams/${examId}/questions/save-drafts`, data);
+export const getExamQuestions        = (examId) => api.get(`/api/exams/${examId}/questions`);
+export const updateExamQuestion      = (examId, eqId, data) => api.patch(`/api/exams/${examId}/questions/${eqId}`, data);
+export const removeExamQuestion      = (examId, bqId) => api.delete(`/api/exams/${examId}/questions/${bqId}`);
 
 // Attempts
 export const startExam          = (examId) => api.post(`/api/exams/${examId}/start`);
@@ -110,3 +119,9 @@ export const getAttemptQuestions = (attemptId) => api.get(`/api/attempts/${attem
 export const getAttemptAnswers  = (attemptId) => api.get(`/api/attempts/${attemptId}/answers`);
 export const saveAttemptAnswer  = (attemptId, questionId, data) => api.put(`/api/attempts/${attemptId}/answers/${questionId}`, data);
 export const evaluateAttempt    = (attemptId) => api.post(`/api/attempts/${attemptId}/evaluate`);
+
+// Teacher Results
+export const getExamAttempts        = (examId)    => api.get(`/api/exams/${examId}/attempts`);
+export const getTeacherAttempt      = (attemptId) => api.get(`/api/teacher/attempts/${attemptId}`);
+export const getTeacherAttemptAnswers = (attemptId) => api.get(`/api/teacher/attempts/${attemptId}/answers`);
+

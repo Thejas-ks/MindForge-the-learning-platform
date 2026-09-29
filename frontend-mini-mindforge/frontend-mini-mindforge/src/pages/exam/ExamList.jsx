@@ -95,7 +95,7 @@ export default function ExamList() {
     setStartingId(exam.id);
     try {
       const res = await startExam(exam.id);
-      navigate(`/attempts/${res.data.id}`);
+      navigate(`/attempts/${res.data.id}`, { state: { attempt: res.data } });
     } catch (err) {
       toast.error(getErrorMessage(err));
       setStartingId(null);

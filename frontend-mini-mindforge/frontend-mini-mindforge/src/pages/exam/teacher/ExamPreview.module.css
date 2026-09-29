@@ -1,0 +1,434 @@
+/* ── Page shell ── */
+.page { width: 100%; }
+
+/* ── Header ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.825rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0 0 0.5rem 0;
+  transition: var(--transition);
+  display: block;
+}
+.backBtn:hover { color: var(--primary); }
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.statusBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* ── Two-column layout ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: calc(var(--navbar-height) + 1.5rem);
+}
+
+/* ── Exam info card ── */
+.examInfoCard { padding: 1.75rem; }
+
+.examName {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.examDesc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.metaRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.875rem;
+}
+
+.metaLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metaValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Sections ── */
+.section { display: flex; flex-direction: column; gap: 0.875rem; }
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sectionCount {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.15rem 0.55rem;
+}
+
+.questionList { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* ── Question card ── */
+.questionCard { padding: 1.25rem 1.5rem; }
+
+.qHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.qOrder {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  min-width: 24px;
+  flex-shrink: 0;
+  padding-top: 0.1rem;
+}
+
+.qBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.qTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+  line-height: 1.45;
+}
+
+.qText {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+/* ── Options ── */
+.optionList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.optionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.55rem 0.875rem;
+  border-radius: var(--radius);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.optionCorrect {
+  background: rgba(16, 185, 129, 0.07);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--text);
+}
+
+.optionMark {
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  padding-top: 0.05rem;
+  color: var(--text-dim);
+}
+
+.optionCorrect .optionMark {
+  color: var(--success);
+}
+
+.optionText { flex: 1; line-height: 1.5; }
+
+.openAnswerHint {
+  font-size: 0.825rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* ── Shared badge / chip ── */
+.badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+}
+
+/* ── Marks summary ── */
+.summaryCard { padding: 1.25rem 1.5rem; }
+
+.summaryTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.summaryTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.summaryTable tr { border-bottom: 1px solid var(--border); }
+.summaryTable tr:last-child { border-bottom: none; }
+
+.summaryLabel {
+  padding: 0.5rem 0.25rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.summaryValue {
+  padding: 0.5rem 0.25rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: right;
+}
+
+.summaryDivider td {
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--border);
+}
+
+/* ── Validation panel ── */
+.validationCard { padding: 1.25rem 1.5rem; }
+
+.validationTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.checkList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.845rem;
+  line-height: 1.5;
+}
+
+.checkPass { color: var(--text-secondary); }
+.checkFail { color: var(--error); }
+
+.checkIcon {
+  font-weight: 700;
+  flex-shrink: 0;
+  padding-top: 0.05rem;
+  font-size: 0.8rem;
+}
+
+.checkPass .checkIcon { color: var(--success); }
+.checkFail .checkIcon { color: var(--error); }
+
+.checkMsg { flex: 1; }
+
+/* ── Status banner ── */
+.statusBanner {
+  border-radius: var(--radius);
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.statusReady {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--success);
+}
+
+.statusNotReady {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--error);
+}
+
+/* ── Publish action ── */
+.publishAction {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.publishHint {
+  font-size: 0.775rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+/* ── Empty states ── */
+.emptyQuestions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.emptyQuestions span { font-size: 2rem; }
+
+.emptyHint {
+  font-size: 0.825rem;
+  color: var(--text-dim);
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 2rem;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.errorState span { font-size: 2.5rem; }
+
+.errorHint {
+  font-size: 0.825rem;
+  color: var(--text-dim);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    order: -1; /* show validation above questions on mobile */
+  }
+}
+
+@media (max-width: 600px) {
+  .metaGrid { grid-template-columns: 1fr 1fr; }
+  .qHeader { flex-direction: column; gap: 0.5rem; }
+  .pageHeader { flex-direction: column; align-items: flex-start; }
+}

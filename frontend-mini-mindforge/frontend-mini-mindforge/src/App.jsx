@@ -16,6 +16,13 @@ import Profile from './pages/Profile';
 import ExamList from './pages/exam/ExamList';
 import ExamAttempt from './pages/exam/ExamAttempt';
 import ExamResult from './pages/exam/ExamResult';
+import TeacherDashboard from './pages/exam/teacher/TeacherDashboard';
+import QuestionBank from './pages/exam/teacher/QuestionBank';
+import ExamManager from './pages/exam/teacher/ExamManager';
+import ExamQuestions from './pages/exam/teacher/ExamQuestions';
+import ExamPreview from './pages/exam/teacher/ExamPreview';
+import ExamResults from './pages/exam/teacher/ExamResults';
+import TeacherAttemptDetail from './pages/exam/teacher/TeacherAttemptDetail';
 
 function PrivateRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" replace />;
@@ -71,6 +78,13 @@ export default function App() {
         <Route path="/exams"                      element={<PrivateRoute><ExamList /></PrivateRoute>} />
         <Route path="/attempts/:attemptId"         element={<PrivateRoute><ExamAttempt /></PrivateRoute>} />
         <Route path="/attempts/:attemptId/result"  element={<PrivateRoute><ExamResult /></PrivateRoute>} />
+        <Route path="/teacher/dashboard" element={<RoleRoute roles={['TEACHER', 'ADMIN']}><TeacherDashboard /></RoleRoute>} />
+        <Route path="/teacher/exams" element={<RoleRoute roles={['TEACHER', 'ADMIN']}><ExamManager /></RoleRoute>} />
+        <Route path="/teacher/question-bank" element={<RoleRoute roles={['TEACHER', 'ADMIN']}><QuestionBank /></RoleRoute>} />
+        <Route path="/teacher/exams/:examId/questions" element={<RoleRoute roles={['TEACHER', 'ADMIN']}><ExamQuestions /></RoleRoute>} />
+        <Route path="/teacher/exams/:examId/preview"   element={<RoleRoute roles={['TEACHER', 'ADMIN']}><ExamPreview /></RoleRoute>} />
+        <Route path="/teacher/exams/:examId/results" element={<RoleRoute roles={['TEACHER', 'ADMIN']}><ExamResults /></RoleRoute>} />
+        <Route path="/teacher/attempts/:attemptId" element={<RoleRoute roles={['TEACHER', 'ADMIN']}><TeacherAttemptDetail /></RoleRoute>} />
         <Route path="*"           element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>

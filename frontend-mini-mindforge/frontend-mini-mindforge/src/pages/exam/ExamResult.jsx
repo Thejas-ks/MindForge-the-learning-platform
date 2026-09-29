@@ -29,13 +29,10 @@ export default function ExamResult() {
   if (loading) return <Layout><Loader text="Loading result…" /></Layout>;
   if (!attempt) return <Layout><p className={styles.errorMsg}>Result not found.</p></Layout>;
 
-  const { score, percentage, passed, examTitle, status } = attempt;
-  // totalMarks: from EvaluationResponse via location.state (immediate after submission)
-  // Fallback on refresh: derive from score + percentage (both present on ExamAttemptResponse)
-  const totalMarks = evaluation?.totalMarks
-    ?? (score != null && percentage != null && percentage > 0
-        ? Math.round(score / (percentage / 100))
-        : null);
+  const { score, percentage, passed, examTitle, status, examTotalMarks } = attempt;
+  // totalMarks: prefer examTotalMarks from ExamAttemptResponse (always present after fix).
+  // Fallback to EvaluationResponse via location.state for attempts evaluated before the fix.
+  const totalMarks = examTotalMarks ?? evaluation?.totalMarks ?? null;
   const pct = percentage ?? 0;
   const isPassed = passed ?? false;
 

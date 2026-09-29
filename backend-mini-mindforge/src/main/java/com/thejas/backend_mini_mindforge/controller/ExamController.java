@@ -1,0 +1,87 @@
+package com.thejas.backend_mini_mindforge.controller;
+
+import com.thejas.backend_mini_mindforge.dto.request.ExamRequest;
+import com.thejas.backend_mini_mindforge.dto.response.ExamPreviewResponse;
+import com.thejas.backend_mini_mindforge.entity.Exam;
+import com.thejas.backend_mini_mindforge.service.ExamService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/exams")
+public class ExamController {
+
+    private final ExamService examService;
+
+    public ExamController(ExamService examService) {
+        this.examService = examService;
+    }
+
+    // Create exam — TEACHER or ADMIN
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @PostMapping
+    public ResponseEntity<Exam> create(@RequestBody ExamRequest req, Authentication auth) {
+        return ResponseEntity.ok(examService.create(req, auth.getName()));
+    }
+
+    // Get all exams created by the authenticated user
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @GetMapping
+    public ResponseEntity<List<Exam>> getAll(Authentication auth) {
+        return ResponseEntity.ok(examService.getAll(auth.getName()));
+    }
+
+    // Get all published exams — accessible by any authenticated user
+    @GetMapping("/published")
+    public ResponseEntity<List<Exam>> getPublished() {
+        return ResponseEntity.ok(examService.getPublished());
+    }
+
+    // Get single exam by ID — only the creator can access
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<Exam> getById(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(examService.getById(id, auth.getName()));
+    }
+
+    // Get teacher preview with enriched question data (teacher/admin only)
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @GetMapping("/{id}/preview")
+    public ResponseEntity<ExamPreviewResponse> preview(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(examService.getPreview(id, auth.getName()));
+    }
+
+    // Update exam
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<Exam> update(@PathVariable Long id,
+                                       @RequestBody ExamRequest req,
+                                       Authentication auth) {
+        return ResponseEntity.ok(examService.update(id, req, auth.getName()));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @PostMapping("/{id}/publish")
+    public ResponseEntity<Exam> publish(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(examService.publish(id, auth.getName()));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @PostMapping("/{id}/archive")
+    public ResponseEntity<Exam> archive(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(examService.archive(id, auth.getName()));
+    }
+
+
+    // Delete exam — only the creator can delete
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
+        examService.delete(id, auth.getName());
+        return ResponseEntity.ok().build();
+    }
+}

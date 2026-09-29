@@ -132,7 +132,10 @@ public class ExamQuestionService {
     @Transactional
     public ExamQuestionResponse update(Long examId, Long examQuestionId,
                                        ExamQuestionRequest req, String createdBy) {
-        findOwnedExam(examId, createdBy);
+        Exam exam = findOwnedExam(examId, createdBy);
+        if (exam.getStatus() != ExamStatus.DRAFT) {
+            throw new IllegalStateException("Questions cannot be modified after the exam is published.");
+        }
         ExamQuestion eq = examQuestionRepository.findById(examQuestionId)
                 .filter(e -> e.getExam().getId().equals(examId))
                 .orElseThrow(() -> new ResourceNotFoundException("ExamQuestion not found with id: " + examQuestionId));
@@ -151,7 +154,10 @@ public class ExamQuestionService {
 
     @Transactional
     public void remove(Long examId, Long bankQuestionId, String createdBy) {
-        findOwnedExam(examId, createdBy);
+        Exam exam = findOwnedExam(examId, createdBy);
+        if (exam.getStatus() != ExamStatus.DRAFT) {
+            throw new IllegalStateException("Questions cannot be modified after the exam is published.");
+        }
         if (!examQuestionRepository.existsByExamIdAndBankQuestionId(examId, bankQuestionId))
             throw new ResourceNotFoundException("Question " + bankQuestionId + " is not in exam " + examId);
         examQuestionRepository.deleteByExamIdAndBankQuestionId(examId, bankQuestionId);
@@ -159,7 +165,10 @@ public class ExamQuestionService {
 
     @Transactional
     public void removeAll(Long examId, String createdBy) {
-        findOwnedExam(examId, createdBy);
+        Exam exam = findOwnedExam(examId, createdBy);
+        if (exam.getStatus() != ExamStatus.DRAFT) {
+            throw new IllegalStateException("Questions cannot be modified after the exam is published.");
+        }
         examQuestionRepository.deleteByExamId(examId);
     }
 

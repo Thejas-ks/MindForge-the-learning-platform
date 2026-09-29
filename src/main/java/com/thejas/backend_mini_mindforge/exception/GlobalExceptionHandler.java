@@ -25,6 +25,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNoHandlerFound(NoHandlerFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, "No endpoint: " + ex.getHttpMethod() + " " + ex.getRequestURL());

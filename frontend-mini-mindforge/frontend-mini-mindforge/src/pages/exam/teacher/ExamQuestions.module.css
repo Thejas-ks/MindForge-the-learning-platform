@@ -1,0 +1,473 @@
+.page { width: 100%; }
+
+/* ── Header ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.825rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0 0 0.5rem 0;
+  transition: var(--transition);
+}
+
+.backBtn:hover { color: var(--primary); }
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.examMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* ── Shared atoms ── */
+.badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+}
+
+/* ── Draft banner ── */
+.draftBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warning);
+  border-radius: var(--radius);
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* ── Read-only banner (PUBLISHED / ARCHIVED) ── */
+.readOnlyBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--text-dim);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.readOnlyText {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  min-width: 160px;
+}
+
+.draftBannerIcon { font-size: 1.1rem; flex-shrink: 0; }
+
+.draftBannerText {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  min-width: 160px;
+}
+
+.draftBannerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dismissBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.dismissBtn:hover { color: var(--text); }
+
+/* ── Empty actions ── */
+.emptyActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.sectionCount {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.15rem 0.55rem;
+}
+
+/* ── Assigned list ── */
+.assignedList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.assignedCard { padding: 1rem 1.25rem; }
+
+.assignedRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.assignedOrder {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  min-width: 28px;
+  flex-shrink: 0;
+}
+
+.assignedInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.assignedMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.assignedActions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.qTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── Bank section ── */
+.bankHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bankHeader .sectionTitle { margin-bottom: 0; }
+
+.selectAllRow {
+  margin-bottom: 0.75rem;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.bankList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bankCard {
+  padding: 0.875rem 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.bankCard:hover {
+  border-color: var(--primary);
+}
+
+.bankCardSelected {
+  border-color: var(--primary) !important;
+  background: rgba(79,70,229,0.04);
+}
+
+.bankRow {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.bankInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.bankMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+/* ── Add bar (sticky bottom) ── */
+.addBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: sticky;
+  bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.addBarText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Empty state ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 2rem;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.empty span { font-size: 2rem; }
+
+.emptyHint {
+  font-size: 0.825rem;
+  color: var(--text-dim);
+}
+
+/* ── Configure modal ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, var(--radius));
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  animation: fadeUp 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.modalSubtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: -0.5rem;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm, 4px);
+  transition: var(--transition);
+}
+
+.closeBtn:hover { color: var(--text); }
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fieldLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.fieldHint {
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.select {
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'Inter', inherit;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: var(--transition);
+  cursor: pointer;
+  width: 100%;
+}
+
+.select:focus {
+  border-color: var(--primary);
+  background: var(--input-focus-bg);
+  box-shadow: var(--shadow-glow);
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.formError {
+  font-size: 0.85rem;
+  color: var(--error);
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius);
+  padding: 0.65rem 1rem;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .assignedRow { flex-wrap: wrap; }
+  .assignedActions { width: 100%; justify-content: flex-end; }
+  .bankHeader { flex-direction: column; align-items: flex-start; }
+  .addBar { flex-direction: column; align-items: stretch; text-align: center; }
+  .headerActions { width: 100%; }
+  .draftBanner { flex-direction: column; align-items: flex-start; }
+}

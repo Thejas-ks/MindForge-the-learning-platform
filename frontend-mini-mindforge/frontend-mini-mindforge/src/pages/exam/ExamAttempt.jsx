@@ -1,5 +1,6 @@
+
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   getAttemptById,
   getAttemptQuestions,
@@ -114,6 +115,7 @@ function QuestionItem({ question, answer, onAnswer, saving }) {
 export default function ExamAttempt() {
   const { attemptId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [attempt, setAttempt] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -129,17 +131,21 @@ export default function ExamAttempt() {
     let cancelled = false;
 
     const load = async () => {
-      // getAttemptById must succeed — if it fails, the page cannot render
-      let attemptData;
-      try {
-        const res = await getAttemptById(attemptId);
-        attemptData = res.data;
-      } catch (err) {
-        if (!cancelled) toast.error(getErrorMessage(err));
-        return;
+      // Use attempt data from navigation state (passed by ExamList after startExam)
+      // to avoid re-fetching — getAttemptById has a backend lazy-load issue on GET.
+      // Only fall back to getAttemptById on direct URL visit / refresh.
+      const stateAttempt = location.state?.attempt;
+      if (stateAttempt && String(stateAttempt.id) === String(attemptId)) {
+        if (!cancelled) setAttempt(stateAttempt);
+      } else {
+        try {
+          const res = await getAttemptById(attemptId);
+          if (!cancelled) setAttempt(res.data);
+        } catch (err) {
+          if (!cancelled) toast.error(getErrorMessage(err));
+          return;
+        }
       }
-      if (cancelled) return;
-      setAttempt(attemptData);
 
       // Questions and answers are fetched independently — a failure on either
       // shows a toast but does not prevent the page from rendering

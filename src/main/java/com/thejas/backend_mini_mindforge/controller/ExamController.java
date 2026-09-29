@@ -1,6 +1,7 @@
 package com.thejas.backend_mini_mindforge.controller;
 
 import com.thejas.backend_mini_mindforge.dto.request.ExamRequest;
+import com.thejas.backend_mini_mindforge.dto.response.ExamPreviewResponse;
 import com.thejas.backend_mini_mindforge.entity.Exam;
 import com.thejas.backend_mini_mindforge.service.ExamService;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,13 @@ public class ExamController {
     @GetMapping("/{id}")
     public ResponseEntity<Exam> getById(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(examService.getById(id, auth.getName()));
+    }
+
+    // Get teacher preview with enriched question data (teacher/admin only)
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    @GetMapping("/{id}/preview")
+    public ResponseEntity<ExamPreviewResponse> preview(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(examService.getPreview(id, auth.getName()));
     }
 
     // Update exam — only the creator can update
